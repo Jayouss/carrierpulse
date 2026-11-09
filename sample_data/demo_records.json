@@ -1,0 +1,222 @@
+[
+  {
+    "id": "demo_rest_01",
+    "name": "Central Valley Grill & Smokehouse",
+    "address": "1240 Fulton St, Fresno, CA 93721",
+    "raw_phone": "(559) 441-8890",
+    "website": "https://cvgrill-fresno.example.com",
+    "category": "Restaurants",
+    "category_id": "restaurant",
+    "simulated_carrier": "Comcast Business Communications, LLC",
+    "simulated_line_type": "fixedVoip"
+  },
+  {
+    "id": "demo_rest_02",
+    "name": "Tower District Bistro",
+    "address": "820 E Olive Ave, Fresno, CA 93728",
+    "raw_phone": "(559) 268-3410",
+    "website": "https://towerdistrictbistro.example.com",
+    "category": "Restaurants",
+    "category_id": "restaurant",
+    "simulated_carrier": "AT&T Corp.",
+    "simulated_line_type": "landline"
+  },
+  {
+    "id": "demo_rest_03",
+    "name": "San Joaquin Taqueria & Cantina",
+    "address": "4520 N Blackstone Ave, Fresno, CA 93726",
+    "raw_phone": "(559) 222-5501",
+    "website": "https://sanjoaquintaqueria.example.com",
+    "category": "Restaurants",
+    "category_id": "restaurant",
+    "simulated_carrier": "Xfinity",
+    "simulated_line_type": "landline"
+  },
+  {
+    "id": "demo_rest_04",
+    "name": "Woodward Park Cafe",
+    "address": "7750 N Friant Rd, Fresno, CA 93720",
+    "raw_phone": "(559) 434-1122",
+    "website": "https://woodwardcafe.example.com",
+    "category": "Restaurants",
+    "category_id": "restaurant",
+    "simulated_carrier": "Spectrum / Charter Communications",
+    "simulated_line_type": "fixedVoip"
+  },
+  {
+    "id": "demo_dent_01",
+    "name": "Fresno Premier Dental Care",
+    "address": "1313 E Herndon Ave Ste 102, Fresno, CA 93720",
+    "raw_phone": "(559) 438-6000",
+    "website": "https://fresnopremierdental.example.com",
+    "category": "Dentists",
+    "category_id": "dentist",
+    "simulated_carrier": "Comcast IP Phone, LLC",
+    "simulated_line_type": "fixedVoip"
+  },
+  {
+    "id": "demo_dent_02",
+    "name": "Clovis-Fresno Smile Center",
+    "address": "6225 N Fresno St, Fresno, CA 93710",
+    "raw_phone": "(559) 432-8811",
+    "website": "https://clovisfresnosmiles.example.com",
+    "category": "Dentists",
+    "category_id": "dentist",
+    "simulated_carrier": "Comcast Business",
+    "simulated_line_type": "landline"
+  },
+  {
+    "id": "demo_dent_03",
+    "name": "Valley Orthodontics & Pediatric Dentistry",
+    "address": "2525 W Shaw Ave, Fresno, CA 93711",
+    "raw_phone": "(559) 227-7500",
+    "website": "https://valleyorthofresno.example.com",
+    "category": "Dentists",
+    "category_id": "dentist",
+    "simulated_carrier": "Broadwing Communications (Comcast)",
+    "simulated_line_type": "landline"
+  },
+  {
+    "id": "demo_dent_04",
+    "name": "Herndon Family Dental Group",
+    "address": "1580 E Herndon Ave, Fresno, CA 93720",
+    "raw_phone": "(559) 323-9900",
+    "website": "https://herndonfamilydental.example.com",
+    "category": "Dentists",
+    "category_id": "dentist",
+    "simulated_carrier": "Frontier Communications",
+    "simulated_line_type": "landline"
+  },
+  {
+    "id": "demo_auto_01",
+    "name": "Blackstone Auto Masters & Transmission",
+    "address": "3845 N Blackstone Ave, Fresno, CA 93726",
+    "raw_phone": "(559) 226-7788",
+    "website": "https://blackstoneautomasters.example.com",
+    "category": "Auto Repair Shops",
+    "category_id": "auto_repair",
+    "simulated_carrier": "Comcast Cable Communications, LLC",
+    "simulated_line_type": "landline"
+  },
+  {
+    "id": "demo_auto_02",
+    "name": "Fresno Brakes, Tires & Complete Auto",
+    "address": "1610 E Belmont Ave, Fresno, CA 93701",
+    "raw_phone": "(559) 485-3000",
+    "website": "https://fresnobrakesauto.example.com",
+    "category": "Auto Repair Shops",
+    "category_id": "auto_repair",
+    "simulated_carrier": "Verizon Wireless",
+    "simulated_line_type": "mobile"
+  },
+  {
+    "id": "demo_auto_03",
+    "name": "Shaw Avenue European Auto Clinic",
+    "address": "5120 E Shaw Ave, Fresno, CA 93727",
+    "raw_phone": "(559) 291-8844",
+    "website": "https://shaweuropeanauto.example.com",
+    "category": "Auto Repair Shops",
+    "category_id": "auto_repair",
+    "simulated_carrier": "CIMCO Communications (Comcast)",
+    "simulated_line_type": "fixedVoip"
+  },
+  {
+    "id": "demo_auto_04",
+    "name": "Kings Canyon Quick Lube & Alignment",
+    "address": "4880 E Kings Canyon Rd, Fresno, CA 93727",
+    "raw_phone": "(559) 255-6677",
+    "website": null,
+    "category": "Auto Repair Shops",
+    "category_id": "auto_repair",
+    "simulated_carrier": "Unverified Comcast Partner Reseller",
+    "simulated_line_type": "unknown"
+  },
+  {
+    "id": "demo_plumb_01",
+    "name": "Valley Rooter & 24/7 Plumbing Pros",
+    "address": "2910 E McKinley Ave, Fresno, CA 93703",
+    "raw_phone": "(559) 498-1199",
+    "website": "https://valleyrooterfresno.example.com",
+    "category": "Plumbers",
+    "category_id": "plumber",
+    "simulated_carrier": "Comcast Business Communications",
+    "simulated_line_type": "fixedVoip"
+  },
+  {
+    "id": "demo_plumb_02",
+    "name": "All-State Emergency Plumbing of Fresno",
+    "address": "1805 N Fine Ave Ste 104, Fresno, CA 93727",
+    "raw_phone": "(559) 251-4040",
+    "website": "https://allstateplumbingfresno.example.com",
+    "category": "Plumbers",
+    "category_id": "plumber",
+    "simulated_carrier": "AT&T California",
+    "simulated_line_type": "landline"
+  },
+  {
+    "id": "demo_plumb_03",
+    "name": "Sierra Cascade Plumbing & Water Heating",
+    "address": "4690 E Gettysburg Ave, Fresno, CA 93726",
+    "raw_phone": "(559) 224-1234",
+    "website": "https://sierracascadeplumb.example.com",
+    "category": "Plumbers",
+    "category_id": "plumber",
+    "simulated_carrier": "Xfinity Mobile",
+    "simulated_line_type": "mobile"
+  },
+  {
+    "id": "demo_plumb_04",
+    "name": "Heritage Pipe & Drain Services",
+    "address": "711 N Van Ness Ave, Fresno, CA 93728",
+    "raw_phone": "(559) 486-0909",
+    "website": null,
+    "category": "Plumbers",
+    "category_id": "plumber",
+    "simulated_carrier": null,
+    "simulated_line_type": "unknown"
+  },
+  {
+    "id": "demo_law_01",
+    "name": "San Joaquin Valley Legal Group, LLP",
+    "address": "2444 Tulare St Ste 400, Fresno, CA 93721",
+    "raw_phone": "(559) 486-5200",
+    "website": "https://sjvlegalgroup.example.com",
+    "category": "Law Firms / Professional Offices",
+    "category_id": "law_firm",
+    "simulated_carrier": "Comcast IP Phone, LLC",
+    "simulated_line_type": "fixedVoip"
+  },
+  {
+    "id": "demo_law_02",
+    "name": "Fresno Commercial Law & Estate Partners",
+    "address": "5260 N Palm Ave Ste 201, Fresno, CA 93704",
+    "raw_phone": "(559) 432-4500",
+    "website": "https://fresnocommerciallaw.example.com",
+    "category": "Law Firms / Professional Offices",
+    "category_id": "law_firm",
+    "simulated_carrier": "Comcast Business Communications",
+    "simulated_line_type": "fixedVoip"
+  },
+  {
+    "id": "demo_law_03",
+    "name": "Central California Injury Attorneys",
+    "address": "1060 Fulton Mall Ste 800, Fresno, CA 93721",
+    "raw_phone": "(559) 441-2000",
+    "website": "https://ccinjuryattorneys.example.com",
+    "category": "Law Firms / Professional Offices",
+    "category_id": "law_firm",
+    "simulated_carrier": "Bandwidth.com CLEC",
+    "simulated_line_type": "nonFixedVoip"
+  },
+  {
+    "id": "demo_law_04",
+    "name": "Herndon & Palm Professional Accounting & Law",
+    "address": "7080 N Marks Ave Ste 101, Fresno, CA 93711",
+    "raw_phone": "(559) 436-1800",
+    "website": "https://herndonpalmlaw.example.com",
+    "category": "Law Firms / Professional Offices",
+    "category_id": "law_firm",
+    "simulated_carrier": "Broadwing Communications LLC",
+    "simulated_line_type": "landline"
+  }
+]

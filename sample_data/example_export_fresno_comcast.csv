@@ -1,0 +1,7 @@
+Business Name,Address,Phone Number,Carrier,Line Type,Website,Category,Match Status
+Central Valley Grill & Smokehouse,"1240 Fulton St, Fresno, CA 93721",(559) 441-8890,Comcast Business Communications,fixedVoip,https://cvgrill-fresno.example.com,Restaurants,Comcast Match
+Fresno Premier Dental Care,"1313 E Herndon Ave Ste 102, Fresno, CA 93720",(559) 438-6000,Comcast IP Phone,fixedVoip,https://fresnopremierdental.example.com,Dentists,Comcast Match
+Blackstone Auto Masters & Transmission,"3845 N Blackstone Ave, Fresno, CA 93726",(559) 226-7788,Comcast Cable Communications,landline,https://blackstoneautomasters.example.com,Auto Repair Shops,Comcast Match
+Shaw Avenue European Auto Clinic,"5120 E Shaw Ave, Fresno, CA 93727",(559) 291-8844,CIMCO Communications (Comcast),fixedVoip,https://shaweuropeanauto.example.com,Auto Repair Shops,Possible Match
+Valley Rooter & 24/7 Plumbing Pros,"2910 E McKinley Ave, Fresno, CA 93703",(559) 498-1199,Comcast Business Communications,fixedVoip,https://valleyrooterfresno.example.com,Plumbers,Comcast Match
+San Joaquin Valley Legal Group, LLP,"2444 Tulare St Ste 400, Fresno, CA 93721",(559) 486-5200,Comcast IP Phone,fixedVoip,https://sjvlegalgroup.example.com,Law Firms / Professional Offices,Comcast Match
