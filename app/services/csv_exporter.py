@@ -40,8 +40,8 @@ def sanitize_csv_cell(value: Any) -> str:
     return s
 
 
-def generate_export_filename(prefix: str = "fresno_comcast_businesses") -> str:
-    """Generate standardized export filename with current date: fresno_comcast_businesses_YYYY-MM-DD.csv"""
+def generate_export_filename(prefix: str = "carrierpulse_records") -> str:
+    """Generate standardized export filename with current date: carrierpulse_records_YYYY-MM-DD.csv"""
     date_str = datetime.date.today().strftime("%Y-%m-%d")
     return f"{prefix}_{date_str}.csv"
 

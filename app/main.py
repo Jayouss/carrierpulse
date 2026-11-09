@@ -28,13 +28,13 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
-logger = logging.getLogger("fresno_carrier_finder")
+logger = logging.getLogger("carrierpulse")
 
 BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI(
-    title="Fresno Carrier Finder",
-    description="Find businesses in Fresno, CA and detect Comcast/Xfinity phone carriers.",
+    title="CarrierPulse",
+    description="Commercial Telecom Discovery & Carrier Verification Platform.",
     version=AppSettings.VERSION,
     docs_url="/docs",
     redoc_url=None,

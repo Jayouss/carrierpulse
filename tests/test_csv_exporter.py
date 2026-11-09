@@ -25,7 +25,7 @@ def test_sanitize_csv_cell_formula_injection():
 
 def test_export_filename_format():
     fn = generate_export_filename()
-    assert fn.startswith("fresno_comcast_businesses_")
+    assert fn.startswith("carrierpulse_records_")
     assert fn.endswith(".csv")
 
 

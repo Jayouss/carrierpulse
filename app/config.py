@@ -1,4 +1,6 @@
-"""Configuration and Credential Management for Fresno Carrier Finder."""
+"""Configuration and Credential Management for CarrierPulse.
+Commercial Telecom Discovery & Carrier Verification Platform.
+"""
 
 import os
 import re
@@ -8,7 +10,8 @@ import keyring
 from keyring.errors import KeyringError
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-KEYRING_SERVICE_NAME = "fresno_carrier_finder"
+KEYRING_SERVICE_NAME = "carrierpulse"
+KEYRING_LEGACY_SERVICE_NAME = "fresno_carrier_finder"
 
 # Keys stored in keyring or environment
 KEY_GOOGLE_PLACES = "GOOGLE_PLACES_API_KEY"
@@ -16,7 +19,87 @@ KEY_TWILIO_ACCOUNT_SID = "TWILIO_ACCOUNT_SID"
 KEY_TWILIO_API_KEY_SID = "TWILIO_API_KEY_SID"
 KEY_TWILIO_API_SECRET = "TWILIO_API_SECRET"
 
-# Fresno Geographic Defaults
+# Supported Metro Regions (Multi-metro architecture)
+METRO_REGIONS = [
+    {
+        "id": "fresno_ca",
+        "name": "Fresno, CA",
+        "state": "California",
+        "lat": 36.7468422,
+        "lng": -119.7725868,
+        "radius_meters": 25000,
+        "area_codes": ["559"],
+        "zip_regex": r"\b93[678]\d{2}\b",
+        "is_default": True,
+    },
+    {
+        "id": "bakersfield_ca",
+        "name": "Bakersfield, CA",
+        "state": "California",
+        "lat": 35.3732921,
+        "lng": -119.0187125,
+        "radius_meters": 25000,
+        "area_codes": ["661"],
+        "zip_regex": r"\b933\d{2}\b",
+        "is_default": False,
+    },
+    {
+        "id": "sacramento_ca",
+        "name": "Sacramento, CA",
+        "state": "California",
+        "lat": 38.5815719,
+        "lng": -121.4943996,
+        "radius_meters": 30000,
+        "area_codes": ["916", "279"],
+        "zip_regex": r"\b958\d{2}\b",
+        "is_default": False,
+    },
+    {
+        "id": "modesto_ca",
+        "name": "Modesto, CA",
+        "state": "California",
+        "lat": 37.6390972,
+        "lng": -120.9968782,
+        "radius_meters": 20000,
+        "area_codes": ["209"],
+        "zip_regex": r"\b953\d{2}\b",
+        "is_default": False,
+    },
+]
+
+# Supported Target Carrier Profiles
+CARRIER_TARGET_PROFILES = [
+    {
+        "id": "comcast_xfinity",
+        "label": "Comcast / Xfinity / Comcast Business",
+        "keywords": ["comcast", "xfinity", "cimco"],
+        "badge": "Comcast Target",
+        "is_default": True,
+    },
+    {
+        "id": "att",
+        "label": "AT&T Corp / SBC Telecom",
+        "keywords": ["at&t", "att", "sbc", "pacbell", "pacific bell", "ameritech"],
+        "badge": "AT&T Target",
+        "is_default": False,
+    },
+    {
+        "id": "charter_spectrum",
+        "label": "Charter Spectrum / Time Warner",
+        "keywords": ["charter", "spectrum", "time warner"],
+        "badge": "Spectrum Target",
+        "is_default": False,
+    },
+    {
+        "id": "all_carriers",
+        "label": "All Commercial Networks (Full Carrier Inventory)",
+        "keywords": [],
+        "badge": "All Networks",
+        "is_default": False,
+    },
+]
+
+# Default Geographic Settings (Fresno CA Preset)
 FRESNO_LAT = 36.7468422
 FRESNO_LNG = -119.7725868
 FRESNO_SEARCH_RADIUS_METERS = 25000  # 25 km covers Fresno & Clovis metro
@@ -71,6 +154,13 @@ def _get_secret(key_name: str) -> Optional[str]:
     except (KeyringError, Exception):
         pass
 
+    try:
+        val = keyring.get_password(KEYRING_LEGACY_SERVICE_NAME, key_name)
+        if val:
+            return val
+    except (KeyringError, Exception):
+        pass
+
     return os.getenv(key_name)
 
 
@@ -107,7 +197,10 @@ class AppSettings:
     """Application settings accessor."""
 
     VERSION = "1.0.0"
-    APP_NAME = "Fresno Carrier Finder"
+    APP_NAME = "CarrierPulse"
+    PRODUCT_NAME = "CarrierPulse"
+    PLATFORM_TAGLINE = "Commercial Telecom Discovery & Carrier Verification Platform"
+    DEFAULT_METRO = "Fresno, California, USA"
     LOCATION = "Fresno, California, USA"
 
     @classmethod

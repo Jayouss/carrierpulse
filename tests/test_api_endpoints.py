@@ -10,7 +10,7 @@ client = TestClient(app)
 def test_index_page():
     res = client.get("/")
     assert res.status_code == 200
-    assert "Fresno Carrier Finder" in res.text
+    assert "CarrierPulse" in res.text
     assert "Business Discovery" in res.text
 
 

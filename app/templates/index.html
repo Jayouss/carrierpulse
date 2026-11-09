@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fresno Carrier Finder — Intelligence Dashboard</title>
+  <title>CarrierPulse — Commercial Telecom Discovery &amp; Line Verification</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -22,8 +22,8 @@
           </svg>
         </div>
         <div class="brand-text">
-          <span class="brand-name">Fresno Carrier Finder</span>
-          <span class="brand-tag">Comcast &amp; Xfinity Telecom Intelligence</span>
+          <span class="brand-name">CarrierPulse</span>
+          <span class="brand-tag">Commercial Telecom Discovery &amp; Line Verification</span>
         </div>
       </div>
 
@@ -50,6 +50,10 @@
 
       <!-- Right Cluster -->
       <div class="navbar-right">
+        <div class="metro-scope-badge" title="Active Metro Region Profile">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span id="nav-active-metro">Fresno, CA (Area 559)</span>
+        </div>
         <div class="live-status-pill" id="top-status-indicator">
           <span class="pulse-dot"></span>
           <span class="status-label" id="top-status-text">Ready · Demo Mode</span>
@@ -74,7 +78,7 @@
           <!-- Left Telemetry Column -->
           <div class="hero-col hero-col-left">
             <div class="hero-header-line">
-              <span class="hero-code mono" id="hero-company-id">#FRESNO-01</span>
+              <span class="hero-code mono" id="hero-company-id">#CP-01</span>
               <span class="badge badge-hero-match" id="hero-match-badge">Comcast Match</span>
             </div>
 
@@ -103,7 +107,7 @@
             <div class="hero-stat-block">
               <div class="stat-block-header">
                 <span class="stat-label">Comcast Detection Rate</span>
-                <span class="stat-period">Fresno Batch</span>
+                <span class="stat-period" id="hero-stat-period">Target Batch</span>
               </div>
               <div class="stat-bar-gauge">
                 <div class="gauge-bars-group" id="hero-mini-bars">
@@ -209,8 +213,8 @@
         <!-- 2. HORIZONTAL COMPANY SELECTION RAIL (Ronas IT Vehicle Carousel) -->
         <section class="company-rail-wrapper">
           <div class="rail-header">
-            <span class="rail-title">Scanned Companies in Fresno</span>
-            <span class="rail-hint">Click any business card below to inspect details in the hero terminal</span>
+            <span class="rail-title">Audited Commercial Listings</span>
+            <span class="rail-hint">Select any company below to inspect verified carrier telemetry and map positioning</span>
           </div>
           <div class="company-rail-track" id="company-rail-track">
             <!-- Injected dynamically via JS: company thumb cards -->
@@ -219,11 +223,11 @@
 
         <!-- 3. BOTTOM SECTION: DISTRIBUTION OVERVIEW + DATA TABLE -->
         <section class="bottom-split-section">
-          <!-- Left: Fresno Distribution Overview (Map & Share Breakdown) -->
+          <!-- Left: Distribution Overview (Map & Share Breakdown) -->
           <div class="side-panel-card">
             <div class="panel-head-line">
-              <h3 class="panel-heading">Fresno Carrier Share</h3>
-              <span class="panel-pill mono">Metro CA</span>
+              <h3 class="panel-heading">Regional Carrier Attribution</h3>
+              <span class="panel-pill mono">Metro Intelligence</span>
             </div>
 
             <div class="carrier-share-breakdown">
@@ -268,15 +272,15 @@
               </div>
             </div>
 
-            <!-- Fresno Geographic Scope Highlights -->
-            <div class="fresno-geo-highlights">
+            <!-- Regional Geographic Scope Highlights -->
+            <div class="fresno-geo-highlights metro-geo-highlights">
               <div class="geo-stat-item">
-                <span class="geo-stat-label">Coverage Radius</span>
-                <strong class="geo-stat-val mono">25 km Metro</strong>
+                <span class="geo-stat-label">Active Market</span>
+                <strong class="geo-stat-val mono" id="side-market-tag">Fresno, CA</strong>
               </div>
               <div class="geo-stat-item">
                 <span class="geo-stat-label">Primary Prefix</span>
-                <strong class="geo-stat-val mono">Area 559</strong>
+                <strong class="geo-stat-val mono" id="side-prefix-tag">Area 559</strong>
               </div>
             </div>
           </div>
@@ -350,7 +354,7 @@
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 </div>
                 <h4>No matching businesses found</h4>
-                <p>Try switching to "All" or run a new scan across additional Fresno categories.</p>
+                <p>Try switching to "All" or run a new scan across additional categories or regional parameters.</p>
               </div>
             </div>
           </div>
@@ -364,20 +368,45 @@
       <div class="view-panel" id="view-new-scan">
         <div class="subpage-card">
           <div class="subpage-header">
-            <h2 class="subpage-title">Configure Business Discovery Scan</h2>
-            <p class="subpage-desc">Scan Fresno businesses and detect Comcast/Xfinity carrier assignments via Twilio Lookup v2.</p>
+            <h2 class="subpage-title">Configure Business Discovery &amp; Line Audit</h2>
+            <p class="subpage-desc">Audit commercial business listings and identify operating telephone carrier networks via Twilio Lookup v2.</p>
           </div>
 
           <form id="scan-config-form" class="scan-form-grid">
             <div class="form-column-main">
+              <!-- Regional Scope & Target Carrier Profile -->
+              <div class="form-card-block form-card-split">
+                <div class="input-field-group">
+                  <label class="field-label" for="scan-metro-select">1. Target Metro Region</label>
+                  <select id="scan-metro-select" class="clean-select">
+                    <option value="fresno_ca" selected>Fresno, CA (Area 559) — [Preconfigured Default]</option>
+                    <option value="bakersfield_ca">Bakersfield, CA (Area 661)</option>
+                    <option value="sacramento_ca">Sacramento, CA (Area 916)</option>
+                    <option value="modesto_ca">Modesto, CA (Area 209)</option>
+                    <option value="custom">Custom Metro / Central Valley...</option>
+                  </select>
+                  <span class="field-help">Pre-configured regional coordinate and ZIP boundary</span>
+                </div>
+                <div class="input-field-group">
+                  <label class="field-label" for="scan-carrier-target-select">2. Carrier Detection Target</label>
+                  <select id="scan-carrier-target-select" class="clean-select">
+                    <option value="comcast_xfinity" selected>Comcast &amp; Xfinity [Active Intelligence Target]</option>
+                    <option value="att">AT&amp;T Corp / Pacific Bell</option>
+                    <option value="charter_spectrum">Charter / Spectrum</option>
+                    <option value="all_carriers">All Commercial Networks (Full Carrier Inventory)</option>
+                  </select>
+                  <span class="field-help">Primary carrier matching and attribution profile</span>
+                </div>
+              </div>
+
               <!-- Provider Selection -->
               <div class="form-card-block">
-                <label class="block-label">1. Select Data Provider</label>
+                <label class="block-label">3. Select Data Provider</label>
                 <div class="provider-cards-rack">
                   <label class="provider-radio-card">
                     <input type="radio" name="provider_mode" value="demo" checked>
                     <div class="radio-card-body">
-                      <strong>Demo Mode (Fresno Synthetic Dataset)</strong>
+                      <strong>Demo Mode (Synthetic Telecom Dataset)</strong>
                       <span>Zero API keys required. Test real-time scan, UI, classification, and CSV export.</span>
                     </div>
                   </label>
@@ -385,14 +414,14 @@
                     <input type="radio" name="provider_mode" value="google_places">
                     <div class="radio-card-body">
                       <strong>Google Places API (New)</strong>
-                      <span>Live discovery in Fresno. Display only (Google Terms prohibit bulk CSV downloads).</span>
+                      <span>Live discovery in target metro. Display only (Google Terms restrict bulk CSV downloads).</span>
                     </div>
                   </label>
                   <label class="provider-radio-card">
                     <input type="radio" name="provider_mode" value="licensed_dataset">
                     <div class="radio-card-body">
                       <strong>Licensed Dataset / CSV Upload</strong>
-                      <span>Export-licensed Fresno records or your own business CSV. Fully exportable.</span>
+                      <span>Export-licensed commercial records or your own business CSV. Fully exportable.</span>
                     </div>
                   </label>
                 </div>
@@ -400,7 +429,7 @@
 
               <!-- Categories -->
               <div class="form-card-block">
-                <label class="block-label">2. Target Business Categories</label>
+                <label class="block-label">4. Target Business Categories</label>
                 <div class="category-pills-wrap">
                   <label class="cat-pill-checkbox">
                     <input type="checkbox" name="scan_category" value="restaurant" checked>
@@ -626,7 +655,7 @@
 
         <div class="export-file-specs">
           <div><strong>Format:</strong> UTF-8 with BOM (optimized for Microsoft Excel on Windows)</div>
-          <div><strong>Filename:</strong> <code id="export-filename-preview">fresno_comcast_businesses_YYYY-MM-DD.csv</code></div>
+          <div><strong>Filename:</strong> <code id="export-filename-preview">carrierpulse_records_YYYY-MM-DD.csv</code></div>
           <div><strong>Formula Injection Guard:</strong> Active (leading single quote escape)</div>
         </div>
       </div>

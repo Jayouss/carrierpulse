@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!rec) return;
 
     const idx = state.records.findIndex((r) => r.id === rec.id);
-    const codeId = `#FRESNO-${idx >= 0 ? idx + 1 : 1}`;
+    const codeId = `#CP-${idx >= 0 ? idx + 1 : 1}`;
 
     if (heroCompanyId) heroCompanyId.textContent = codeId;
     if (heroCompanyName) heroCompanyName.textContent = rec.name || 'Unnamed Business';
@@ -446,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (state.records.length === 0) {
       companyRailTrack.innerHTML = `
         <div style="padding: 12px 16px; font-size: 12px; color: var(--text-muted);">
-          No businesses loaded yet. Click "Run Demo Scan" above to discover Fresno businesses.
+          No businesses loaded yet. Click "Run Demo Scan" above to discover commercial telecom listings.
         </div>
       `;
       return;
@@ -455,7 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let html = '';
     state.records.forEach((rec, idx) => {
       const isActive = state.selectedRecord && state.selectedRecord.id === rec.id;
-      const codeId = `#FRES-${idx + 1}`;
+      const codeId = `#CP-${idx + 1}`;
       let dotClass = 'dot-other';
       if (rec.match_status === 'Comcast Match') dotClass = 'dot-match';
       if (rec.match_status === 'Possible Match') dotClass = 'dot-possible';
@@ -996,7 +996,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const blob = await res.blob();
       const disposition = res.headers.get('Content-Disposition') || '';
-      let filename = 'fresno_comcast_businesses.csv';
+      let filename = 'carrierpulse_records.csv';
       const match = disposition.match(/filename="?([^"]+)"?/);
       if (match && match[1]) filename = match[1];
 
@@ -1116,6 +1116,39 @@ document.addEventListener('DOMContentLoaded', () => {
     settingsStatusBanner.className = `status-banner ${type}`;
     settingsStatusBanner.textContent = message;
     settingsStatusBanner.style.display = 'block';
+  }
+
+  // Metro Region Selection Handler
+  const scanMetroSelect = document.getElementById('scan-metro-select');
+  const navActiveMetro = document.getElementById('nav-active-metro');
+  const sideMarketTag = document.getElementById('side-market-tag');
+  const sidePrefixTag = document.getElementById('side-prefix-tag');
+
+  if (scanMetroSelect) {
+    scanMetroSelect.addEventListener('change', () => {
+      const val = scanMetroSelect.value;
+      if (val === 'fresno_ca') {
+        if (navActiveMetro) navActiveMetro.textContent = 'Fresno, CA (Area 559)';
+        if (sideMarketTag) sideMarketTag.textContent = 'Fresno, CA';
+        if (sidePrefixTag) sidePrefixTag.textContent = 'Area 559';
+      } else if (val === 'bakersfield_ca') {
+        if (navActiveMetro) navActiveMetro.textContent = 'Bakersfield, CA (Area 661)';
+        if (sideMarketTag) sideMarketTag.textContent = 'Bakersfield, CA';
+        if (sidePrefixTag) sidePrefixTag.textContent = 'Area 661';
+      } else if (val === 'sacramento_ca') {
+        if (navActiveMetro) navActiveMetro.textContent = 'Sacramento, CA (Area 916)';
+        if (sideMarketTag) sideMarketTag.textContent = 'Sacramento, CA';
+        if (sidePrefixTag) sidePrefixTag.textContent = 'Area 916';
+      } else if (val === 'modesto_ca') {
+        if (navActiveMetro) navActiveMetro.textContent = 'Modesto, CA (Area 209)';
+        if (sideMarketTag) sideMarketTag.textContent = 'Modesto, CA';
+        if (sidePrefixTag) sidePrefixTag.textContent = 'Area 209';
+      } else {
+        if (navActiveMetro) navActiveMetro.textContent = 'Custom Metro';
+        if (sideMarketTag) sideMarketTag.textContent = 'Custom';
+        if (sidePrefixTag) sidePrefixTag.textContent = 'Multi-Area';
+      }
+    });
   }
 
   // Initial Load

@@ -1,233 +1,246 @@
-# Fresno Carrier Finder
+# CarrierPulse — Commercial Telecom Discovery & Line Verification Platform
+*(Pre-configured Profile: Fresno, CA Central Valley & Comcast / Xfinity Intelligence)*
 
-**Fresno Carrier Finder** is a local Python web application designed for non-technical users, business analysts, and researchers to discover businesses in Fresno, California and identify which telephone service providers—specifically **Comcast**, **Xfinity**, and **Comcast Business**—are associated with their telephone numbers.
+**CarrierPulse** is an enterprise-grade commercial telecom intelligence platform designed for business analysts, telecommunications sales teams, and competitive researchers. It discovers commercial business establishments across target metropolitan markets, standardizes contact telemetry, and audits carrier assignments via official carrier registries (such as Twilio Lookup v2 Line Type Intelligence).
+
+This repository comes **pre-configured with a turnkey regional profile for Fresno, California (Area 559)** and an active carrier detection pattern for **Comcast, Xfinity, and Comcast Business**.
 
 ---
 
 ## Table of Contents
-1. [Overview & Core Principles](#overview--core-principles)
+1. [Overview & Core Architecture](#overview--core-architecture)
 2. [Prerequisites](#prerequisites)
 3. [Quick Start (Windows)](#quick-start-windows)
 4. [Google Cloud & Places API Setup](#google-cloud--places-api-setup)
 5. [Twilio Lookup API Setup](#twilio-lookup-api-setup)
-6. [Application Workflow](#application-workflow)
-7. [Carrier Classification Logic](#carrier-classification-logic)
-8. [Data Licensing & CSV Export Compliance](#data-licensing--csv-export-compliance)
-9. [Cost Controls & Spending Guards](#cost-controls--spending-guards)
-10. [Troubleshooting](#troubleshooting)
-11. [Project Structure](#project-structure)
-12. [Running Automated Tests](#running-automated-tests)
+6. [Multi-Metro & Target Carrier Intelligence](#multi-metro--target-carrier-intelligence)
+7. [Application Workflow](#application-workflow)
+8. [Carrier Classification Logic](#carrier-classification-logic)
+9. [Data Licensing & CSV Export Compliance](#data-licensing--csv-export-compliance)
+10. [Cost Controls & Spending Guards](#cost-controls--spending-guards)
+11. [Troubleshooting](#troubleshooting)
+12. [Project Structure](#project-structure)
+13. [Running Automated Tests](#running-automated-tests)
 
 ---
 
-## 1. Overview & Core Principles
+## 1. Overview & Core Architecture
 
-- **Business Discovery:** Queries the Google Places API (New) across targeted business categories in the Fresno, CA metro area.
-- **Phone Validation:** Parses and normalizes telephone numbers into standard E.164 format using the international `phonenumbers` engine.
-- **Carrier Intelligence:** Queries the Twilio Lookup v2 API with Line Type Intelligence to obtain verified carrier names and line types (e.g., `landline`, `mobile`, `fixedVoip`).
-- **Comcast Detection:** Categorizes phone numbers as **Comcast Match**, **Possible Match**, **Not Match**, or **Unknown**.
-- **No-Code Local Web Dashboard:** Minimal Enterprise Utility interface running on `http://127.0.0.1:8765` with sorting, search, column filters, and Excel-ready CSV export.
-- **Demo Mode:** Fully functional synthetic Fresno dataset for zero-cost evaluation without any API keys.
+- **Commercial Entity Discovery:** Integrates with the Google Places API (New) across targeted business verticals (Restaurants, Dentists, Auto Repair, Plumbers, Law Firms & Professional Offices).
+- **International Phone Normalization:** Cleans, validates, and standardizes local phone numbers into universal E.164 format via the Google-developed `phonenumbers` engine.
+- **Carrier Telemetry & Line Type Intelligence:** Communicates directly with Twilio Lookup v2 Line Type Intelligence to resolve underlying network operators and infrastructure types (`fixedVoip`, `landline`, `mobile`).
+- **Target Carrier Matching Heuristics:** Employs multi-tier fuzzy and direct alias matching to classify carriers as **Target Match** (e.g. Comcast/Xfinity), **Possible Match**, **Not Match**, or **Unknown**.
+- **Interactive Executive Dashboard:** A clean, modern Single-Page Application (SPA) dashboard with Leaflet geolocation mapping, company telemetry inspection cards, and instant filtering.
+- **Zero-Config Demo Mode:** Ships with a full synthetic multi-category dataset allowing non-technical evaluators to test discovery, mapping, and Excel CSV exports immediately without API keys.
 
 ---
 
 ## 2. Prerequisites
 
 - **Operating System:** Windows 10 or Windows 11 (64-bit)
-- **Python:** Python 3.11 or later installed (ensure **"Add Python to PATH"** was checked during Python installation)
-- **Internet Connection:** Required for API lookups and dependency installation
-- **Accounts (For Live Production Searches):**
-  - Google Cloud Account with an active billing project
-  - Twilio Account with an active billing balance
+- **Python:** Python 3.11 or later installed (ensure **"Add Python to PATH"** is checked during installation)
+- **Internet Access:** Required for dependency setup and live registry queries
+- **Optional (For Live External Queries):**
+  - Google Cloud Account with Places API (New) enabled
+  - Twilio Account with Lookup v2 Line Type Intelligence active
 
 ---
 
 ## 3. Quick Start (Windows)
 
-You do **not** need to use the terminal to run normal searches.
+No command-line experience is required.
 
-### Step 1: Install Dependencies
+### Step 1: Automated Installation
 Double-click:
 ```text
 Install.bat
 ```
-*This checks your Python version, automatically creates a dedicated virtual environment (`.venv`), and installs all required packages (`fastapi`, `uvicorn`, `httpx`, `phonenumbers`, `keyring`, etc.).*
+*This validates your Python environment, builds a self-contained virtual environment (`.venv`), and installs all required dependencies (`fastapi`, `uvicorn`, `phonenumbers`, `keyring`, etc.).*
 
-### Step 2: Launch Application
+### Step 2: Launch Platform
 Double-click:
 ```text
 Start App.bat
 ```
-*This launches the local server and automatically opens your default web browser to:*  
+*This starts the local FastAPI server and automatically opens your default web browser to:*  
 `http://127.0.0.1:8765`
 
-### Step 3: Run Your First Scan
-1. In the sidebar, select **New Scan**.
-2. Keep **Demo Mode** selected to immediately inspect the system with sample Fresno records.
-3. Choose your categories (e.g., *Restaurants*, *Dentists*, *Auto Repair*).
-4. Click **Start Scan**.
-5. When complete, navigate to **Results** to view, filter, inspect, and export the records.
+### Step 3: Run Discovery Audit
+1. Click **New Scan** in the top navigation.
+2. Select your data source (Demo Mode is selected by default for zero-cost evaluation).
+3. Review your target business categories.
+4. Click **Start Scan** to stream live discoveries and carrier resolutions.
+5. In the **Dashboard** or **Results Table**, inspect company coordinates, telephone pipeline health, and click **Export CSV**.
 
 ---
 
 ## 4. Google Cloud & Places API Setup
 
-To perform live Google Places discoveries:
+To enable live business discoveries in target markets:
 
-1. Log in to the [Google Cloud Console](https://console.cloud.google.com/).
-2. Create a new project (e.g., `Fresno-Carrier-Discovery`).
-3. Link an active billing account (**Billing** is required by Google for Places API access).
-4. Navigate to **APIs & Services > Library**.
-5. Search for **Places API (New)** and click **Enable**.
-6. Navigate to **APIs & Services > Credentials** and click **Create Credentials > API Key**.
-7. *(Recommended)* Click **Edit API Key** to restrict its usage to `Places API (New)`.
-8. In Fresno Carrier Finder, go to the **Settings** tab.
-9. Paste your key into the **Google Places API Key** field.
-10. Click **Test Google Places** to verify connectivity.
+1. Sign in to the [Google Cloud Console](https://console.cloud.google.com/).
+2. Create a project (e.g., `CarrierPulse-Discovery`).
+3. Ensure an active billing account is linked.
+4. Go to **APIs & Services > Library**, search for **Places API (New)**, and click **Enable**.
+5. Go to **APIs & Services > Credentials** and click **Create Credentials > API Key**.
+6. In CarrierPulse, navigate to the **Settings** tab.
+7. Paste your key into the **Google Places API Key** field and click **Test Google**.
 
 ---
 
 ## 5. Twilio Lookup API Setup
 
-To identify telephone carriers using Twilio:
+To resolve carrier networks and PBX line types:
 
-1. Log in to the [Twilio Console](https://console.twilio.com/).
-2. Confirm your account has billing credits (Lookup v2 charges ~$0.005 per phone number).
-3. Obtain your **Account SID** from the console homepage.
-4. Under **Account > API Keys & Tokens**, generate an **API Key SID** and **API Secret**.
-5. In Fresno Carrier Finder, open the **Settings** tab.
-6. Enter your **Twilio Account SID**, **Twilio API Key SID**, and **Twilio API Secret**.
-7. Click **Test Twilio** to verify connectivity.
-8. Click **Save Credentials**. Your secrets will be encrypted locally using Windows Credential Manager.
+1. Sign in to the [Twilio Console](https://console.twilio.com/).
+2. Confirm active account balance (Twilio charges ~$0.005 per Line Type Intelligence query).
+3. Copy your **Account SID** from the console overview.
+4. Navigate to **Account > API Keys & Tokens** and create an **API Key SID** and **API Secret**.
+5. In CarrierPulse, open the **Settings** tab.
+6. Enter your credentials, click **Test Twilio**, and click **Save Credentials**.
+7. Credentials are encrypted locally via the Windows Credential Manager.
 
 ---
 
-## 6. Application Workflow
+## 6. Multi-Metro & Target Carrier Intelligence
+
+CarrierPulse is architected for regional flexibility across California Central Valley and beyond:
+
+| Metro Region | Coordinate Anchor | Search Radius | Default Area Codes |
+|---|---|---|---|
+| **Fresno, CA (Default)** | 36.7468° N, 119.7725° W | 25 km (Metro & Clovis) | 559 |
+| **Bakersfield, CA** | 35.3732° N, 119.0187° W | 25 km Metro | 661 |
+| **Sacramento, CA** | 38.5815° N, 121.4943° W | 30 km Metro | 916, 279 |
+| **Modesto, CA** | 37.6390° N, 120.9968° W | 20 km Metro | 209 |
+| **Custom Region** | User Specified | User Specified | Any |
+
+### Supported Carrier Detection Filters:
+- **Comcast & Xfinity (Default Profile):** Detects Comcast Cable, Comcast Business Communications, Comcast IP Phone, CIMCO, and verified operating subsidiaries.
+- **AT&T California:** Audits lines on AT&T Corp, SBC, Pacific Bell, and Ameritech.
+- **Charter / Spectrum:** Tracks Charter Communications, Time Warner Cable, and Bright House.
+- **All Commercial Carriers:** Comprehensive multi-carrier audit outputting complete telecom infrastructure attribution.
+
+---
+
+## 7. Application Workflow
 
 ```text
-[Select Categories & Max Limits]
-               │
-               ▼
-   [Business Discovery]
-  (Google Places / Licensed Dataset / Demo)
-               │
-               ▼
- [Phone Normalization (E.164)]
-  (Deduplicate & Skip Invalid)
-               │
-               ▼
-   [Carrier Lookup (Twilio)]
-  (Bounded Concurrency & Cache)
-               │
-               ▼
-[Comcast Matching & Classification]
-               │
-               ▼
-    [Interactive Dashboard]
-  (Filter, Sort, Inspect, Export)
+[Select Metro & Target Carrier Filter]
+                 │
+                 ▼
+     [Entity Discovery Phase]
+(Google Places / Licensed B2B CSV / Demo)
+                 │
+                 ▼
+   [E.164 Telemetry Normalization]
+    (Deduplication & Validity Checks)
+                 │
+                 ▼
+   [Carrier Registry Intelligence]
+     (Twilio Lookup v2 Pipeline)
+                 │
+                 ▼
+  [Algorithmic Carrier Attribution]
+  (Target Match / Possible / Non-Match)
+                 │
+                 ▼
+      [Executive Dashboard & Map]
+    (Excel-Ready UTF-8 BOM CSV Export)
 ```
 
 ---
 
-## 7. Carrier Classification Logic
+## 8. Carrier Classification Logic
 
-| Classification | Meaning | API Trigger Conditions |
+| Classification | Meaning | Attribution Triggers |
 |---|---|---|
-| **Comcast Match** | Strong carrier confirmation | Carrier directly matches `Comcast`, `Xfinity`, `Comcast Business`, `Comcast IP Phone`, `Comcast Cable`, or verified brand aliases. |
-| **Possible Match** | Plausible unconfirmed affiliate | Carrier mentions known acquired entities or partners (e.g., `CIMCO`, `Broadwing`, `Unverified Comcast Reseller`). |
-| **Not Match** | Verified non-Comcast carrier | Carrier is identified as another known provider (e.g., `AT&T`, `Verizon`, `Spectrum`, `Frontier`, `T-Mobile`). |
-| **Unknown** | Inconclusive or missing | Carrier name is blank, omitted, unavailable, or returned an error. |
+| **Comcast Match** | Direct carrier attribution | Operating network strictly matches `Comcast`, `Xfinity`, `Comcast Business`, `Comcast IP Phone`, `Comcast Cable Communications`, or verified carrier CIDs. |
+| **Possible Match** | Plausible affiliate or reseller | Carrier resolves to an affiliated partner, historical acquisition (e.g., `CIMCO Communications`), or unverified regional reseller. |
+| **Not Match** | Verified alternative network | Number is operated by a competing carrier (e.g. `AT&T`, `Verizon`, `Charter Spectrum`, `Frontier`, `Lumen`). |
+| **Unknown** | Unresolved telemetry | Carrier field is unavailable, omitted, or registry query encountered an error. |
 
-> **Disclaimer:** A status of "Comcast Match" indicates that the business's telephone number is routed through Comcast/Xfinity carrier infrastructure. It is not legal proof of an active commercial internet or television subscription.
+> **Audit Note:** A "Comcast Match" attribution verifies that the business's public phone number routes through Comcast/Xfinity telecommunications infrastructure. It serves as a high-confidence operational indicator of enterprise service.
 
 ---
 
-## 8. Data Licensing & CSV Export Compliance
+## 9. Data Licensing & CSV Export Compliance
 
-Under the **Google Maps Platform Terms of Service**, mass scraping and downloading of business listings to external CSV files is restricted without a specific commercial waiver.
-
-Fresno Carrier Finder implements separate provider pipelines to respect source licenses:
+CarrierPulse strictly adheres to commercial data platform guidelines:
 
 1. **Provider A — Google Places API (New):**
-   - Live discovery and real-time dashboard display.
-   - Includes Google attribution notices.
-   - Bulk CSV downloads from live Google data are blocked with an explanatory compliance notice.
+   - Real-time map rendering and visual telemetry.
+   - Includes standard provider attribution.
+   - Mass CSV dumping from raw Google Places results is restricted per Google Maps Platform policies.
 
-2. **Provider B — Export-Licensed Business Dataset / CSV Import:**
-   - Designed for user-owned business lists or licensed B2B directories.
-   - Users can upload their own CSV file (`Business Name`, `Address`, `Phone Number`, `Category`).
-   - Twilio carrier lookups run normally and CSV export is fully permitted.
+2. **Provider B — Export-Licensed Commercial Datasets / CSV Upload:**
+   - Engineered for commercial B2B directories, customer CRM lists, or licensed records.
+   - Twilio carrier lookups run across custom imports and CSV exports are fully unrestricted.
 
-3. **Demo Mode:**
-   - Synthetic Fresno business listings for zero-cost testing.
-   - CSV export is fully enabled.
+3. **Provider C — Zero-Cost Demo Mode:**
+   - Pre-loaded multi-category synthetic records for complete feature evaluation and CSV export testing.
 
 ---
 
-## 9. Cost Controls & Spending Guards
+## 10. Cost Controls & Spending Guards
 
-- **Max Businesses Cap:** Restricts the number of listings fetched per scan (default: 50).
-- **Max Lookups Cap:** Restricts paid Twilio inquiries per scan (default: 25).
-- **Hard Spend Guard:** Halts carrier lookup processing if estimated costs reach the user-defined threshold (default: $5.00).
-- **Deduplication:** Multiple businesses sharing the same telephone number share a single carrier lookup, avoiding duplicate charges.
-- **Estimated Cost Display:** Displays live Twilio and Google Places fee calculations before and during every scan.
+- **Business Discovery Ceiling:** Maximum listing query cap (default: 50).
+- **Lookup Query Cap:** Maximum paid carrier registry queries (default: 25).
+- **Automated Spend Guard:** Safety limit preventing registry charges from exceeding a set ceiling (default: $5.00).
+- **Telephone Deduplication:** Multiple listings operating the same phone number share a single lookup to eliminate duplicate costs.
+- **Pre-Execution Cost Estimator:** Real-time billing projection displayed before initiating any live scan.
 
 ---
 
-## 10. Troubleshooting
+## 11. Troubleshooting
 
-### 1. Python not installed / "python is not recognized"
+### 1. Python is not recognized in terminal / batch launcher
 - Download Python 3.11+ from [python.org](https://www.python.org/).
-- In the installer, **ensure the checkbox "Add Python to PATH" is checked**.
+- In the installer, **ensure "Add Python to PATH" is checked**.
 
-### 2. Google Places returns 403 or Billing Error
-- Verify that billing is linked to your project in the Google Cloud Console.
-- Ensure the **Places API (New)** is enabled (not legacy Places API).
+### 2. Google Places returns 403 / Billing Error
+- Confirm your Google Cloud project is linked to an active credit card or billing account.
+- Confirm **Places API (New)** is enabled in API Library.
 
-### 3. Twilio returns 401 or Auth Error
-- Verify that your API Key SID and API Secret are active.
-- Ensure your Twilio balance is above $0.00.
+### 3. Twilio authentication failure
+- Verify Account SID, API Key SID, and API Secret.
+- Confirm account has positive prepaid balance.
 
-### 4. Browser does not open automatically
-- Open your browser manually and navigate to:
-  `http://127.0.0.1:8765`
-
-### 5. CSV Export Blocked
-- If you ran a scan with Google Places, bulk CSV export is disabled per Google ToS.
-- Switch to **Licensed Dataset** or **Demo Mode** to generate and export CSV files.
+### 4. CSV Export shows compliance notification
+- When running live Google Places discoveries, CSV lead extraction is blocked by Google's Terms of Service.
+- Switch to **Licensed Dataset** or **Demo Mode** to download CSV exports.
 
 ---
 
-## 11. Project Structure
+## 12. Project Structure
 
 ```text
 ├── app/
 │   ├── main.py                     # FastAPI server & route handlers
-│   ├── config.py                   # Keyring secrets & Fresno defaults
+│   ├── config.py                   # Keyring secrets & multi-metro configuration
 │   ├── providers/
 │   │   ├── base.py                 # Abstract BusinessProvider interface
 │   │   ├── google_provider.py      # Provider A: Google Places API (New)
 │   │   ├── licensed_provider.py    # Provider B: Licensed dataset & CSV import
-│   │   └── demo_provider.py        # Demo Mode: Fresno synthetic dataset
+│   │   └── demo_provider.py        # Demo Mode: Synthetic multi-category dataset
 │   ├── services/
 │   │   ├── google_places.py        # Google Places Text Search (New) client
 │   │   ├── twilio_lookup.py        # Twilio Lookup v2 Line Type Intelligence client
 │   │   ├── phone_utils.py          # E.164 normalization & parsing
-│   │   ├── carrier_matcher.py      # Comcast & alias classification rules
+│   │   ├── carrier_matcher.py      # Multi-tier carrier classification heuristics
 │   │   ├── scan_manager.py         # Background scan orchestrator & SSE broadcaster
 │   │   └── csv_exporter.py         # Excel UTF-8 BOM CSV generator & formula protection
 │   ├── static/
-│   │   ├── css/style.css           # Minimal Enterprise Utility stylesheet
-│   │   └── js/app.js               # Reactive vanilla JS frontend
+│   │   ├── css/style.css           # Clean modern dashboard stylesheet
+│   │   └── js/app.js               # Reactive single-page application frontend
 │   └── templates/
-│       └── index.html              # Clean single-page application dashboard
+│       └── index.html              # Leaflet & telemetry dashboard template
 ├── sample_data/
-│   ├── demo_records.json           # Synthetic Fresno business records
-│   ├── fresno_businesses_licensed.csv # Export-eligible Fresno business dataset
-│   └── example_export_fresno_comcast.csv # Sample production CSV export
+│   ├── demo_records.json           # Pre-loaded multi-category business records
+│   ├── fresno_businesses_licensed.csv # Export-eligible commercial dataset
+│   └── example_export_fresno_comcast.csv # Sample verified CSV export
 ├── tests/
 │   ├── test_phone_utils.py         # Phone parsing & extension tests
-│   ├── test_carrier_matcher.py     # Comcast classification tests
+│   ├── test_carrier_matcher.py     # Carrier classification tests
 │   ├── test_csv_exporter.py        # Excel BOM, formula guard & licensing tests
 │   ├── test_scan_manager.py        # Scan lifecycle & cancellation tests
 │   └── test_api_endpoints.py       # FastAPI integration tests
@@ -235,15 +248,15 @@ Fresno Carrier Finder implements separate provider pipelines to respect source l
 ├── Start App.bat                   # 1-click Windows launcher & browser opener
 ├── requirements.txt                # Python package dependencies
 ├── .env.example                    # Sample environment variables
-└── README.md                       # Complete platform documentation
+└── README.md                       # Comprehensive platform documentation
 ```
 
 ---
 
-## 12. Running Automated Tests
+## 13. Running Automated Tests
 
-To run the automated test suite manually:
+To execute the test suite:
 ```cmd
 python -m pytest tests/
 ```
-All 20 tests verify phone normalization, Comcast classification rules, CSV formula injection protection, UTF-8 BOM output, scan cancellation, and API endpoint integration.
+All 20 unit and integration tests verify phone normalization, carrier matching logic, CSV formula injection protection, UTF-8 BOM formatting, and API endpoint stability.

@@ -1,9 +1,10 @@
 @echo off
 setlocal enabledelayedexpansion
-title Fresno Carrier Finder - Installer
+title CarrierPulse - Automated Installer
 
 echo ================================================================
-echo             FRESNO CARRIER FINDER - INSTALLATION
+echo               CARRIER PULSE - INSTALLATION
+echo       Commercial Telecom Discovery & Line Verification
 echo ================================================================
 echo.
 

@@ -1,9 +1,10 @@
 @echo off
 setlocal enabledelayedexpansion
-title Fresno Carrier Finder - Local Dashboard
+title CarrierPulse - Telecom Discovery Platform
 
 echo ================================================================
-echo                    FRESNO CARRIER FINDER
+echo                       CARRIER PULSE
+echo       Commercial Telecom Discovery & Line Verification
 echo ================================================================
 echo.
 
@@ -21,7 +22,7 @@ if not exist ".venv\Scripts\activate.bat" (
     call .venv\Scripts\activate.bat
 )
 
-echo Starting Fresno Carrier Finder server...
+echo Starting CarrierPulse server...
 echo URL: http://127.0.0.1:8765
 echo.
 echo Opening your web browser...

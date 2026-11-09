@@ -203,6 +203,20 @@ html, body {
   gap: 12px;
 }
 
+.metro-scope-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--color-comcast-soft);
+  color: var(--color-comcast);
+  border: 1px solid rgba(35, 107, 89, 0.2);
+  border-radius: var(--radius-pill);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .live-status-pill {
   display: flex;
   align-items: center;
