@@ -44,6 +44,8 @@ rea_repo/
 scratch/
 scripts/
 *.html
+!templates/**/*.html
+!app/templates/**/*.html
 *.svg
 *.png
 *.txt

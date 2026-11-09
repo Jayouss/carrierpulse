@@ -86,16 +86,35 @@ class ExportCsvRequest(BaseModel):
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     """Render the main single-page application dashboard."""
-    settings_data = AppSettings.get_masked_settings()
-    return templates.TemplateResponse(
-        request,
-        "index.html",
-        {
-            "request": request,
-            "settings": settings_data,
-            "version": AppSettings.VERSION,
-        },
-    )
+    possible_paths = [
+        BASE_DIR / "templates" / "index.html",
+        Path.cwd() / "app" / "templates" / "index.html",
+        Path.cwd() / "templates" / "index.html",
+        BASE_DIR.parent / "app" / "templates" / "index.html",
+    ]
+    for p in possible_paths:
+        if p.exists():
+            html_content = p.read_text(encoding="utf-8")
+            html_content = html_content.replace("{{ version }}", AppSettings.VERSION)
+            return HTMLResponse(content=html_content, status_code=200)
+
+    try:
+        settings_data = AppSettings.get_masked_settings()
+        return templates.TemplateResponse(
+            request,
+            "index.html",
+            {
+                "request": request,
+                "settings": settings_data,
+                "version": AppSettings.VERSION,
+            },
+        )
+    except Exception as e:
+        import traceback
+        return HTMLResponse(
+            f"<h3>Template Loading Error</h3><pre>{str(e)}\n\n{traceback.format_exc()}</pre>",
+            status_code=500,
+        )
 
 
 # -----------------------------------------------------------------------------

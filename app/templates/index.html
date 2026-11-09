@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fresno Carrier Finder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="app-body">
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-mark">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">Carrier Finder</span>
+          <span class="brand-subtitle">Fresno, California</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-screen="dashboard">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-screen="new-scan">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span>New Scan</span>
+        </button>
+        <button class="nav-item" data-screen="results">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span>Results</span>
+          <span class="nav-badge" id="nav-results-count">0</span>
+        </button>
+        <button class="nav-item" data-screen="settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Settings</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="api-status-indicator" id="sidebar-api-status">
+          <span class="status-dot status-unknown"></span>
+          <span class="status-text">Checking credentials...</span>
+        </div>
+        <div class="sidebar-meta">
+          <span>v{{ version }}</span>
+          <span class="separator">·</span>
+          <span>Localhost</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- ================================================================= -->
+      <!-- SCREEN 1: DASHBOARD / OVERVIEW                                   -->
+      <!-- ================================================================= -->
+      <section class="screen-view active" id="view-dashboard">
+        <header class="page-header">
+          <div class="header-titles">
+            <h1 class="page-title">Overview</h1>
+            <p class="page-subtitle">Find local businesses in Fresno, CA and detect Comcast and Xfinity phone lines.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-secondary" id="btn-quick-demo">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>Run Demo Scan</span>
+            </button>
+            <button class="btn btn-primary" id="btn-goto-new-scan">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>Start New Scan</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- KPI Strip -->
+        <div class="kpi-strip">
+          <div class="kpi-cell">
+            <div class="kpi-label">Businesses Found</div>
+            <div class="kpi-value" id="kpi-dash-businesses">0</div>
+            <div class="kpi-caption">Local listings retrieved</div>
+          </div>
+          <div class="kpi-cell">
+            <div class="kpi-label">Numbers Checked</div>
+            <div class="kpi-value" id="kpi-dash-checked">0</div>
+            <div class="kpi-caption">E.164 carrier verified</div>
+          </div>
+          <div class="kpi-cell highlight-cell">
+            <div class="kpi-label">Comcast Matches</div>
+            <div class="kpi-value accent-value" id="kpi-dash-comcast">0</div>
+            <div class="kpi-caption">Verified Comcast/Xfinity</div>
+          </div>
+          <div class="kpi-cell">
+            <div class="kpi-label">Possible Matches</div>
+            <div class="kpi-value warning-value" id="kpi-dash-possible">0</div>
+            <div class="kpi-caption">Secondary review needed</div>
+          </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+          <!-- Active Scan Status / Live Monitor Card -->
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title-group">
+                <h2 class="panel-title">Scanner Activity</h2>
+                <span class="panel-subtitle">Real-time status of carrier identification engine</span>
+              </div>
+              <span class="badge badge-neutral" id="dash-engine-state">Idle</span>
+            </div>
+            <div class="panel-body">
+              <div class="scan-status-box" id="dash-scan-status-box">
+                <div class="stage-indicator">
+                  <span class="stage-label">Current Stage:</span>
+                  <strong class="stage-val" id="dash-stage-text">No active scan</strong>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar-fill" id="dash-progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="progress-details">
+                  <span id="dash-progress-counts">0 / 0 numbers checked</span>
+                  <span class="cost-tag" id="dash-cost-tag">Est. Cost: $0.000</span>
+                </div>
+              </div>
+
+              <div class="recent-actions-row">
+                <button class="btn btn-secondary btn-sm" id="btn-dash-view-results" style="display: none;">
+                  View Results Table →
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Getting Started / Quick Info Panel -->
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title-group">
+                <h2 class="panel-title">Operational Workflow</h2>
+                <span class="panel-subtitle">Key principles for reliable discovery</span>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="steps-list">
+                <div class="step-item">
+                  <div class="step-num">1</div>
+                  <div class="step-content">
+                    <strong>Select Fresno Categories</strong>
+                    <p>Choose Restaurants, Dentists, Auto Repair, Plumbers, or Law Firms.</p>
+                  </div>
+                </div>
+                <div class="step-item">
+                  <div class="step-num">2</div>
+                  <div class="step-content">
+                    <strong>Normalize & Deduplicate</strong>
+                    <p>Numbers are parsed into E.164 and deduplicated to avoid duplicate lookup costs.</p>
+                  </div>
+                </div>
+                <div class="step-item">
+                  <div class="step-num">3</div>
+                  <div class="step-content">
+                    <strong>Verify Carrier & Export</strong>
+                    <p>Classify Comcast vs Possible vs Other carriers and export eligible CSV records.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- SCREEN 2: NEW SCAN / CONFIGURATION                               -->
+      <!-- ================================================================= -->
+      <section class="screen-view" id="view-new-scan">
+        <header class="page-header">
+          <div class="header-titles">
+            <h1 class="page-title">Business Discovery</h1>
+            <p class="page-subtitle">Configure discovery parameters and scan Fresno businesses for Comcast carrier lines.</p>
+          </div>
+        </header>
+
+        <div class="scan-config-layout">
+          <!-- Configuration Form Card -->
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title-group">
+                <h2 class="panel-title">Search Configuration</h2>
+                <span class="panel-subtitle">Specify data provider, target categories, and volume caps</span>
+              </div>
+            </div>
+            <div class="panel-body">
+              <form id="scan-config-form">
+                <!-- Location (Fixed) -->
+                <div class="form-group">
+                  <label class="form-label">Geographic Target</label>
+                  <input type="text" class="input input-readonly" value="Fresno, California, USA (Lat: 36.7468, Lng: -119.7725)" readonly>
+                  <span class="form-help">Fixed to Fresno metropolitan area.</span>
+                </div>
+
+                <!-- Provider Selector -->
+                <div class="form-group">
+                  <label class="form-label">Data Provider</label>
+                  <div class="provider-radio-group">
+                    <label class="radio-card">
+                      <input type="radio" name="provider_mode" value="demo" checked>
+                      <div class="radio-card-content">
+                        <span class="radio-title">Demo Mode (Synthetic Fresno Data)</span>
+                        <span class="radio-desc">Test all UI, filtering, and CSV export workflows without API keys or costs.</span>
+                      </div>
+                    </label>
+                    <label class="radio-card">
+                      <input type="radio" name="provider_mode" value="google_places">
+                      <div class="radio-card-content">
+                        <span class="radio-title">Google Places API (New)</span>
+                        <span class="radio-desc">Live business discovery in Fresno. Display & discovery only (Google ToS restricts CSV download).</span>
+                      </div>
+                    </label>
+                    <label class="radio-card">
+                      <input type="radio" name="provider_mode" value="licensed_dataset">
+                      <div class="radio-card-content">
+                        <span class="radio-title">Licensed Dataset / CSV Upload</span>
+                        <span class="radio-desc">Export-licensed Fresno listings or user-uploaded CSV. Fully eligible for CSV export.</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Custom CSV Upload (conditional for licensed_dataset) -->
+                <div class="form-group" id="custom-csv-upload-container" style="display: none;">
+                  <label class="form-label">Upload Custom Business CSV (Optional)</label>
+                  <div class="file-upload-box">
+                    <input type="file" id="custom-csv-file-input" accept=".csv">
+                    <div class="upload-hint">Upload a .csv containing columns: Business Name, Address, Phone Number, Category</div>
+                  </div>
+                  <div id="custom-csv-status" class="file-upload-status"></div>
+                </div>
+
+                <!-- Business Categories (Multi-select) -->
+                <div class="form-group">
+                  <label class="form-label">Business Categories (Select one or more)</label>
+                  <div class="category-checkbox-grid">
+                    <label class="checkbox-pill">
+                      <input type="checkbox" name="scan_category" value="restaurant" checked>
+                      <span>Restaurants</span>
+                    </label>
+                    <label class="checkbox-pill">
+                      <input type="checkbox" name="scan_category" value="dentist" checked>
+                      <span>Dentists</span>
+                    </label>
+                    <label class="checkbox-pill">
+                      <input type="checkbox" name="scan_category" value="auto_repair" checked>
+                      <span>Auto Repair Shops</span>
+                    </label>
+                    <label class="checkbox-pill">
+                      <input type="checkbox" name="scan_category" value="plumber" checked>
+                      <span>Plumbers</span>
+                    </label>
+                    <label class="checkbox-pill">
+                      <input type="checkbox" name="scan_category" value="law_firm" checked>
+                      <span>Law Firms / Professional Offices</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Limits & Controls Row -->
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label class="form-label" for="input-max-biz">Max Businesses to Discover</label>
+                    <input type="number" id="input-max-biz" class="input" value="50" min="5" max="500" step="5">
+                    <span class="form-help">Default: 50. Maximum: 500.</span>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="input-max-lookups">Max Carrier Lookups</label>
+                    <input type="number" id="input-max-lookups" class="input" value="25" min="1" max="250" step="5">
+                    <span class="form-help">Twilio requests cap. Default: 25.</span>
+                  </div>
+                </div>
+
+                <!-- Cost Estimation Summary Box -->
+                <div class="cost-summary-box">
+                  <div class="cost-header">
+                    <span class="cost-title">Estimated Cost Calculation</span>
+                    <span class="cost-val" id="scan-est-cost-display">$0.125</span>
+                  </div>
+                  <div class="cost-breakdown">
+                    <div class="cost-item">
+                      <span>Twilio Lookup v2 (~$0.005/num):</span>
+                      <strong id="cost-twilio-part">$0.125</strong>
+                    </div>
+                    <div class="cost-item">
+                      <span>Google Places Searches (~$0.032/page):</span>
+                      <strong id="cost-google-part">$0.000</strong>
+                    </div>
+                  </div>
+                  <p class="cost-disclaimer">Estimates are for budget guidance only. Actual billing is determined by Google Cloud and Twilio.</p>
+                </div>
+
+                <!-- Actions -->
+                <div class="form-actions">
+                  <button type="button" class="btn btn-primary btn-lg" id="btn-start-scan">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    <span>Start Scan</span>
+                  </button>
+                  <button type="button" class="btn btn-danger btn-lg" id="btn-stop-scan" style="display: none;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12"/></svg>
+                    <span>Stop Scan</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Live Scan Execution Activity Panel -->
+          <div class="panel" id="panel-scan-live-activity">
+            <div class="panel-header">
+              <div class="panel-title-group">
+                <h2 class="panel-title">Scan Activity</h2>
+                <span class="panel-subtitle">Stage updates and verified counts</span>
+              </div>
+              <span class="badge badge-neutral" id="live-stage-badge">Preparing</span>
+            </div>
+            <div class="panel-body">
+              <!-- Concise Metric Cards -->
+              <div class="metric-cards-grid">
+                <div class="metric-card">
+                  <div class="metric-label">Businesses Found</div>
+                  <div class="metric-value" id="live-metric-found">0</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-label">Numbers Checked</div>
+                  <div class="metric-value" id="live-metric-checked">0</div>
+                </div>
+                <div class="metric-card metric-card-comcast">
+                  <div class="metric-label">Comcast Matches</div>
+                  <div class="metric-value" id="live-metric-comcast">0</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-label">Possible Matches</div>
+                  <div class="metric-value" id="live-metric-possible">0</div>
+                </div>
+              </div>
+
+              <!-- Progress Bar -->
+              <div class="live-progress-section">
+                <div class="progress-bar-container">
+                  <div class="progress-bar-fill" id="live-progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="live-progress-row">
+                  <span id="live-stage-description">Ready to begin</span>
+                  <span id="live-est-cost-readout">Est. Cost: $0.000</span>
+                </div>
+              </div>
+
+              <!-- Live Attribution / Notes -->
+              <div class="source-attribution" id="live-source-attribution">
+                Source: Demo Mode — Synthetic sample dataset for testing
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- SCREEN 3: RESULTS TABLE & EXPORT                                 -->
+      <!-- ================================================================= -->
+      <section class="screen-view" id="view-results">
+        <header class="page-header">
+          <div class="header-titles">
+            <h1 class="page-title">Scan Results</h1>
+            <p class="page-subtitle">Inspect identified businesses, carrier classification, and export eligible records.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-secondary" id="btn-open-export-modal">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Export CSV</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Source Attribution Notice -->
+        <div class="source-banner" id="results-source-banner">
+          <span class="source-banner-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          </span>
+          <span class="source-banner-text" id="results-attribution-text">Data provided by Demo Mode</span>
+        </div>
+
+        <!-- Filter Toolbar -->
+        <div class="toolbar">
+          <div class="toolbar-search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="results-search-input" placeholder="Search by business name, address, carrier, or phone...">
+          </div>
+
+          <div class="toolbar-filters">
+            <!-- Match Status Filter (Default: Comcast Match) -->
+            <div class="filter-group">
+              <label for="filter-match-status" class="filter-label">Match Status:</label>
+              <select id="filter-match-status" class="select select-sm">
+                <option value="Comcast Match" selected>Comcast Match</option>
+                <option value="Possible Match">Possible Match</option>
+                <option value="all">All Results</option>
+                <option value="Not Match">Not Match</option>
+                <option value="Unknown">Unknown</option>
+              </select>
+            </div>
+
+            <!-- Category Filter -->
+            <div class="filter-group">
+              <label for="filter-category" class="filter-label">Category:</label>
+              <select id="filter-category" class="select select-sm">
+                <option value="all" selected>All Categories</option>
+                <option value="Restaurants">Restaurants</option>
+                <option value="Dentists">Dentists</option>
+                <option value="Auto Repair Shops">Auto Repair</option>
+                <option value="Plumbers">Plumbers</option>
+                <option value="Law Firms / Professional Offices">Law Firms</option>
+              </select>
+            </div>
+
+            <!-- Results Counter -->
+            <div class="toolbar-counter">
+              <span id="results-count-text">Showing 0 records</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="table-container">
+          <table class="data-table" id="results-table">
+            <thead>
+              <tr>
+                <th class="th-sortable" data-col="name">Business Name <span class="sort-icon">↕</span></th>
+                <th class="th-sortable" data-col="address">Address <span class="sort-icon">↕</span></th>
+                <th class="th-sortable" data-col="phone">Phone Number <span class="sort-icon">↕</span></th>
+                <th class="th-sortable" data-col="carrier">Carrier <span class="sort-icon">↕</span></th>
+                <th class="th-sortable" data-col="line_type">Line Type <span class="sort-icon">↕</span></th>
+                <th>Website</th>
+                <th class="th-sortable" data-col="category">Category <span class="sort-icon">↕</span></th>
+                <th class="th-sortable" data-col="match_status">Match Status <span class="sort-icon">↕</span></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="results-tbody">
+              <!-- Injected by JavaScript -->
+            </tbody>
+          </table>
+
+          <!-- Empty State -->
+          <div class="empty-state" id="results-empty-state" style="display: none;">
+            <div class="empty-state-icon">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+            <h3 class="empty-state-title" id="empty-state-title">No Comcast matches found</h3>
+            <p class="empty-state-desc" id="empty-state-desc">Try selecting "All Results" or "Possible Match" to review unverified numbers, or run a new scan with additional categories.</p>
+          </div>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="table-pagination" id="table-pagination">
+          <div class="pagination-info" id="pagination-info">Page 1 of 1</div>
+          <div class="pagination-buttons">
+            <button class="btn btn-secondary btn-sm" id="btn-prev-page" disabled>Previous</button>
+            <button class="btn btn-secondary btn-sm" id="btn-next-page" disabled>Next</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- SCREEN 4: SETTINGS & CREDENTIALS                                 -->
+      <!-- ================================================================= -->
+      <section class="screen-view" id="view-settings">
+        <header class="page-header">
+          <div class="header-titles">
+            <h1 class="page-title">Connect your APIs</h1>
+            <p class="page-subtitle">Configure Google Places and Twilio credentials to identify business phone carriers.</p>
+          </div>
+        </header>
+
+        <div class="settings-layout">
+          <!-- Credentials Panel -->
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title-group">
+                <h2 class="panel-title">API Credentials</h2>
+                <span class="panel-subtitle">Stored securely using local Windows Credential Manager</span>
+              </div>
+            </div>
+            <div class="panel-body">
+              <form id="settings-credentials-form">
+                <!-- Google Places Key -->
+                <div class="form-group">
+                  <div class="label-with-action">
+                    <label class="form-label" for="setting-google-key">Google Places API Key</label>
+                    <a href="https://developers.google.com/maps/documentation/places/web-service/get-api-key" target="_blank" rel="noopener noreferrer" class="link-subtle">Get Google Key ↗</a>
+                  </div>
+                  <div class="input-password-wrap">
+                    <input type="password" id="setting-google-key" class="input font-mono" placeholder="AIzaSy...">
+                    <button type="button" class="btn-toggle-eye" data-target="setting-google-key" title="Show/Hide">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                  </div>
+                  <span class="form-help">Requires Places API (New) enabled in Google Cloud Console with billing active.</span>
+                </div>
+
+                <!-- Twilio Account SID -->
+                <div class="form-group">
+                  <div class="label-with-action">
+                    <label class="form-label" for="setting-twilio-account-sid">Twilio Account SID</label>
+                    <a href="https://console.twilio.com/" target="_blank" rel="noopener noreferrer" class="link-subtle">Twilio Console ↗</a>
+                  </div>
+                  <div class="input-password-wrap">
+                    <input type="password" id="setting-twilio-account-sid" class="input font-mono" placeholder="AC...">
+                    <button type="button" class="btn-toggle-eye" data-target="setting-twilio-account-sid" title="Show/Hide">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Twilio API Key SID -->
+                <div class="form-group">
+                  <label class="form-label" for="setting-twilio-key-sid">Twilio API Key SID (or Account SID)</label>
+                  <div class="input-password-wrap">
+                    <input type="password" id="setting-twilio-key-sid" class="input font-mono" placeholder="SK... or AC...">
+                    <button type="button" class="btn-toggle-eye" data-target="setting-twilio-key-sid" title="Show/Hide">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Twilio API Secret -->
+                <div class="form-group">
+                  <label class="form-label" for="setting-twilio-secret">Twilio API Secret (or Auth Token)</label>
+                  <div class="input-password-wrap">
+                    <input type="password" id="setting-twilio-secret" class="input font-mono" placeholder="••••••••••••••••••••••••••••••••">
+                    <button type="button" class="btn-toggle-eye" data-target="setting-twilio-secret" title="Show/Hide">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                  </div>
+                  <span class="form-help">Requires Lookup v2 permission with Line Type Intelligence enabled on your Twilio account.</span>
+                </div>
+
+                <!-- Test Connection & Save Buttons -->
+                <div class="settings-actions-row">
+                  <div class="test-buttons">
+                    <button type="button" class="btn btn-secondary" id="btn-test-google">
+                      <span>Test Google Places</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="btn-test-twilio">
+                      <span>Test Twilio</span>
+                    </button>
+                  </div>
+                  <button type="button" class="btn btn-primary" id="btn-save-settings">
+                    <span>Save Credentials</span>
+                  </button>
+                </div>
+
+                <!-- Status Feedback Message -->
+                <div id="settings-status-banner" class="status-banner" style="display: none;"></div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Application Guidance & Limits Panel -->
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title-group">
+                <h2 class="panel-title">Setup Guidance</h2>
+                <span class="panel-subtitle">Cost rules, security boundaries, and licensing</span>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="info-block">
+                <h3 class="info-block-title">Security & Storage Guarantee</h3>
+                <p class="info-block-text">Credentials are saved locally using the Windows Credential Manager service. They are never sent outside localhost, never printed to terminal logs, and never included in CSV exports.</p>
+              </div>
+
+              <div class="info-block">
+                <h3 class="info-block-title">Cost Transparency</h3>
+                <p class="info-block-text">Twilio charges ~$0.005 per phone lookup for Line Type Intelligence. Google Places charges ~$0.032 per 20 places text search. Hard lookup caps prevent accidental overspending.</p>
+              </div>
+
+              <div class="info-block">
+                <h3 class="info-block-title">Google Maps Compliance (PRD Section 11)</h3>
+                <p class="info-block-text">Google Places API is used for real-time discovery and display. Bulk CSV lead export is restricted for Google-derived records. To export leads, use Provider B (Licensed Dataset) or Demo Mode.</p>
+              </div>
+
+              <div class="info-block">
+                <h3 class="info-block-title">No Keys? Use Demo Mode</h3>
+                <p class="info-block-text">Switch to Demo Mode on the New Scan page to test the entire interface and export synthetic Comcast records without any accounts or API keys.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODALS & DRAWERS                                                      -->
+  <!-- ===================================================================== -->
+
+  <!-- Business Record Detail Drawer -->
+  <div class="drawer-overlay" id="record-drawer-overlay">
+    <div class="drawer" id="record-drawer">
+      <div class="drawer-header">
+        <h3 class="drawer-title" id="drawer-biz-name">Business Details</h3>
+        <button class="drawer-close-btn" id="drawer-close-btn" aria-label="Close drawer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="drawer-body" id="drawer-biz-content">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- CSV Export Modal with Compliance Guard -->
+  <div class="modal-backdrop" id="export-modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Export CSV Records</h3>
+        <button class="modal-close-btn" id="modal-close-btn" aria-label="Close dialog">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="export-compliance-warning" class="compliance-warning-box" style="display: none;">
+          <div class="warning-title">Google Places Source Licensing Notice</div>
+          <div class="warning-text" id="export-compliance-message">
+            Google Places Terms of Service restrict bulk export of business listings to CSV. To export CSV business leads, please use an Export-Licensed dataset (CSV Import) or switch to Demo Mode.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Export Record Scope:</label>
+          <div class="radio-vertical-group">
+            <label class="radio-option">
+              <input type="radio" name="export_filter" value="confirmed_only" checked>
+              <div>
+                <strong>Confirmed Comcast matches only</strong>
+                <span class="sub-text">Recommended. Only businesses where Comcast or Xfinity is verified.</span>
+              </div>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="export_filter" value="include_possible">
+              <div>
+                <strong>Include possible matches</strong>
+                <span class="sub-text">Includes both verified Comcast and unverified carrier affiliates.</span>
+              </div>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="export_filter" value="all">
+              <div>
+                <strong>All results</strong>
+                <span class="sub-text">Exports every discovered listing with its identified carrier status.</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="export-file-specs">
+          <div><strong>Format:</strong> UTF-8 with BOM (optimized for Microsoft Excel on Windows)</div>
+          <div><strong>Filename:</strong> <code id="export-filename-preview">fresno_comcast_businesses_YYYY-MM-DD.csv</code></div>
+          <div><strong>Formula Injection Guard:</strong> Active (cells escaped with leading single quote)</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btn-cancel-export">Cancel</button>
+        <button class="btn btn-primary" id="btn-confirm-export">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Download CSV</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
