@@ -68,4 +68,5 @@ scripts/
 !api/**/*.py
 *.js
 !app/static/js/**/*.js
+!public/static/js/**/*.js
 *.mjs

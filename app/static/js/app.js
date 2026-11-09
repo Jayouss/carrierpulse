@@ -1,6 +1,6 @@
 /**
- * Fresno Carrier Finder - Frontend Application
- * Minimal Enterprise Utility interaction architecture
+ * Fresno Carrier Finder — Ronas IT Logistics Intelligence Dashboard Architecture
+ * Interactive company selection, Hero inspection terminal, carrier analytics & CSV export
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -11,19 +11,17 @@ document.addEventListener('DOMContentLoaded', () => {
     scanProgress: null,
     records: [],
     filteredRecords: [],
+    selectedRecord: null,
     activeFilterStatus: 'Comcast Match',
     activeFilterCategory: 'all',
     searchQuery: '',
     sortCol: 'name',
     sortAsc: true,
-    currentPage: 1,
-    pageSize: 15,
     eventSource: null,
     customCsvContent: null,
-    selectedRecord: null,
   };
 
-  // DOM Elements Cache
+  // Views Cache
   const views = {
     dashboard: document.getElementById('view-dashboard'),
     newScan: document.getElementById('view-new-scan'),
@@ -31,24 +29,67 @@ document.addEventListener('DOMContentLoaded', () => {
     settings: document.getElementById('view-settings'),
   };
 
-  const navButtons = document.querySelectorAll('.sidebar-nav .nav-item');
+  const navPills = document.querySelectorAll('.nav-segmented-track .nav-pill');
   const navResultsCount = document.getElementById('nav-results-count');
-  const sidebarApiStatus = document.getElementById('sidebar-api-status');
+  const topStatusText = document.getElementById('top-status-text');
+  const btnTopQuickScan = document.getElementById('btn-top-quick-scan');
 
-  // Dashboard KPIs & Activity
-  const dashKpiBusinesses = document.getElementById('kpi-dash-businesses');
-  const dashKpiChecked = document.getElementById('kpi-dash-checked');
-  const dashKpiComcast = document.getElementById('kpi-dash-comcast');
-  const dashKpiPossible = document.getElementById('kpi-dash-possible');
-  const dashEngineState = document.getElementById('dash-engine-state');
-  const dashStageText = document.getElementById('dash-stage-text');
-  const dashProgressFill = document.getElementById('dash-progress-fill');
-  const dashProgressCounts = document.getElementById('dash-progress-counts');
-  const dashCostTag = document.getElementById('dash-cost-tag');
-  const btnDashViewResults = document.getElementById('btn-dash-view-results');
+  // Hero Showcase Elements
+  const heroCompanyId = document.getElementById('hero-company-id');
+  const heroMatchBadge = document.getElementById('hero-match-badge');
+  const heroCompanyName = document.getElementById('hero-company-name');
+  const heroCompanyCategory = document.getElementById('hero-company-category');
+  const heroCompanyAddress = document.getElementById('hero-company-address');
+  const heroPhoneNational = document.getElementById('hero-phone-national');
+  const heroPhoneE164 = document.getElementById('hero-phone-e164');
+  const heroMiniBars = document.getElementById('hero-mini-bars');
+  const heroComcastPct = document.getElementById('hero-comcast-pct');
+  const heroLinkWebsite = document.getElementById('hero-link-website');
+  const heroBtnCopyPhone = document.getElementById('hero-btn-copy-phone');
+  const heroCenterCarrier = document.getElementById('hero-center-carrier');
+  const heroLineType = document.getElementById('hero-line-type');
+  const heroLineStatus = document.getElementById('hero-line-status');
+  const gaugeArcPath = document.getElementById('gauge-arc-path');
+  const heroConfidencePct = document.getElementById('hero-confidence-pct');
+  const heroConfidenceTag = document.getElementById('hero-confidence-tag');
+  const heroCostVal = document.getElementById('hero-cost-val');
 
-  // New Scan Controls
-  const formScanConfig = document.getElementById('scan-config-form');
+  // Horizontal Company Rail
+  const companyRailTrack = document.getElementById('company-rail-track');
+
+  // Distribution Overview Elements
+  const meterBarComcast = document.querySelector('.seg-comcast');
+  const meterBarAtt = document.querySelector('.seg-att');
+  const meterBarSpectrum = document.querySelector('.seg-spectrum');
+  const meterBarOther = document.querySelector('.seg-other');
+  const shareComcastCount = document.getElementById('share-comcast-count');
+  const shareAttCount = document.getElementById('share-att-count');
+  const shareSpectrumCount = document.getElementById('share-spectrum-count');
+  const shareOtherCount = document.getElementById('share-other-count');
+
+  // Table Elements
+  const recordsTotalTag = document.getElementById('records-total-tag');
+  const dashRecordsTbody = document.getElementById('dash-records-tbody');
+  const fullResultsTbody = document.getElementById('full-results-tbody');
+  const dashEmptyNotice = document.getElementById('dash-empty-notice');
+  const dashSearchInput = document.getElementById('dash-search-input');
+  const dashCategorySelect = document.getElementById('dash-category-select');
+  const statusFilterTabs = document.querySelectorAll('#status-filter-tabs .status-tab');
+  const tabCntComcast = document.getElementById('tab-cnt-comcast');
+  const tabCntPossible = document.getElementById('tab-cnt-possible');
+  const tabCntAll = document.getElementById('tab-cnt-all');
+  const tabCntOther = document.getElementById('tab-cnt-other');
+
+  // Export Modal Elements
+  const exportModalBackdrop = document.getElementById('export-modal-backdrop');
+  const modalCloseBtn = document.getElementById('modal-close-btn');
+  const btnCancelExport = document.getElementById('btn-cancel-export');
+  const btnConfirmExport = document.getElementById('btn-confirm-export');
+  const btnExportCsvAction = document.getElementById('btn-export-csv-action');
+  const btnOpenExportModalFull = document.getElementById('btn-open-export-modal-full');
+  const exportComplianceWarning = document.getElementById('export-compliance-warning');
+
+  // Scan Controls
   const inputMaxBiz = document.getElementById('input-max-biz');
   const inputMaxLookups = document.getElementById('input-max-lookups');
   const scanEstCostDisplay = document.getElementById('scan-est-cost-display');
@@ -56,45 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const costGooglePart = document.getElementById('cost-google-part');
   const btnStartScan = document.getElementById('btn-start-scan');
   const btnStopScan = document.getElementById('btn-stop-scan');
-  const liveStageBadge = document.getElementById('live-stage-badge');
-  const liveMetricFound = document.getElementById('live-metric-found');
-  const liveMetricChecked = document.getElementById('live-metric-checked');
-  const liveMetricComcast = document.getElementById('live-metric-comcast');
-  const liveMetricPossible = document.getElementById('live-metric-possible');
-  const liveProgressFill = document.getElementById('live-progress-fill');
-  const liveStageDesc = document.getElementById('live-stage-description');
-  const liveEstCostReadout = document.getElementById('live-est-cost-readout');
-  const liveSourceAttribution = document.getElementById('live-source-attribution');
-  const customCsvContainer = document.getElementById('custom-csv-upload-container');
-  const customCsvFileInput = document.getElementById('custom-csv-file-input');
-  const customCsvStatus = document.getElementById('custom-csv-status');
 
-  // Results Table Elements
-  const resultsTbody = document.getElementById('results-tbody');
-  const resultsEmptyState = document.getElementById('results-empty-state');
-  const resultsCountText = document.getElementById('results-count-text');
-  const resultsSearchInput = document.getElementById('results-search-input');
-  const filterMatchStatus = document.getElementById('filter-match-status');
-  const filterCategory = document.getElementById('filter-category');
-  const resultsAttributionText = document.getElementById('results-attribution-text');
-  const paginationInfo = document.getElementById('pagination-info');
-  const btnPrevPage = document.getElementById('btn-prev-page');
-  const btnNextPage = document.getElementById('btn-next-page');
-
-  // Drawer & Modal Elements
-  const drawerOverlay = document.getElementById('record-drawer-overlay');
-  const drawerCloseBtn = document.getElementById('drawer-close-btn');
-  const drawerBizName = document.getElementById('drawer-biz-name');
-  const drawerBizContent = document.getElementById('drawer-biz-content');
-
-  const exportModalBackdrop = document.getElementById('export-modal-backdrop');
-  const modalCloseBtn = document.getElementById('modal-close-btn');
-  const btnCancelExport = document.getElementById('btn-cancel-export');
-  const btnConfirmExport = document.getElementById('btn-confirm-export');
-  const btnOpenExportModal = document.getElementById('btn-open-export-modal');
-  const exportComplianceWarning = document.getElementById('export-compliance-warning');
-
-  // Settings Elements
+  // Settings
   const settingGoogleKey = document.getElementById('setting-google-key');
   const settingTwilioAccountSid = document.getElementById('setting-twilio-account-sid');
   const settingTwilioKeySid = document.getElementById('setting-twilio-key-sid');
@@ -113,11 +117,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (views[key]) views[key].classList.remove('active');
     });
 
-    navButtons.forEach((btn) => {
-      if (btn.getAttribute('data-screen') === screenName) {
-        btn.classList.add('active');
+    navPills.forEach((pill) => {
+      if (pill.getAttribute('data-screen') === screenName) {
+        pill.classList.add('active');
       } else {
-        btn.classList.remove('active');
+        pill.classList.remove('active');
       }
     });
 
@@ -125,29 +129,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (screenName === 'new-scan' && views.newScan) views.newScan.classList.add('active');
     if (screenName === 'results' && views.results) {
       views.results.classList.add('active');
-      refreshResultsTable();
+      renderFullResultsTable();
     }
     if (screenName === 'settings' && views.settings) views.settings.classList.add('active');
   }
 
-  navButtons.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const scr = btn.getAttribute('data-screen');
+  navPills.forEach((pill) => {
+    pill.addEventListener('click', () => {
+      const scr = pill.getAttribute('data-screen');
       if (scr) switchScreen(scr);
     });
   });
 
-  document.getElementById('btn-goto-new-scan')?.addEventListener('click', () => switchScreen('new-scan'));
-  btnDashViewResults?.addEventListener('click', () => switchScreen('results'));
-
-  // Quick Demo Run Button
-  document.getElementById('btn-quick-demo')?.addEventListener('click', () => {
-    switchScreen('new-scan');
-    // Set radio to demo
-    const demoRadio = document.querySelector('input[name="provider_mode"][value="demo"]');
-    if (demoRadio) demoRadio.checked = true;
-    updateCostEstimate();
-    startScan();
+  btnTopQuickScan?.addEventListener('click', () => {
+    switchScreen('dashboard');
+    startScan('demo');
   });
 
   // Password Visibility Toggles
@@ -162,136 +158,495 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ==========================================================================
-  // Settings & Credential API Calls
+  // Hero Inspection Showcase & Selection Logic
   // ==========================================================================
-  async function loadSettings() {
+  function selectCompany(record) {
+    if (!record) return;
+    state.selectedRecord = record;
+    renderHeroShowcase(record);
+    highlightActiveElements(record.id);
+  }
+
+  function renderHeroShowcase(rec) {
+    if (!rec) return;
+
+    const idx = state.records.findIndex((r) => r.id === rec.id);
+    const codeId = `#FRESNO-${idx >= 0 ? idx + 1 : 1}`;
+
+    if (heroCompanyId) heroCompanyId.textContent = codeId;
+    if (heroCompanyName) heroCompanyName.textContent = rec.name || 'Unnamed Business';
+    if (heroCompanyCategory) heroCompanyCategory.textContent = rec.category || 'Business';
+    if (heroCompanyAddress) heroCompanyAddress.textContent = rec.address || 'Fresno, CA';
+
+    // Phone & Verification Pipeline
+    const nationalPhone = rec.formatted_phone || rec.phone || 'No phone listed';
+    const e164Phone = rec.e164 || rec.phone || 'E.164 Pending';
+    if (heroPhoneNational) heroPhoneNational.textContent = nationalPhone;
+    if (heroPhoneE164) heroPhoneE164.textContent = e164Phone;
+
+    // Website Link
+    if (heroLinkWebsite) {
+      if (rec.website) {
+        heroLinkWebsite.href = rec.website;
+        heroLinkWebsite.style.display = 'inline-flex';
+      } else {
+        heroLinkWebsite.style.display = 'none';
+      }
+    }
+
+    // Match Status Badge
+    if (heroMatchBadge) {
+      heroMatchBadge.textContent = rec.match_status || 'Unknown';
+      heroMatchBadge.className = 'badge';
+      if (rec.match_status === 'Comcast Match') {
+        heroMatchBadge.classList.add('badge-comcast');
+      } else if (rec.match_status === 'Possible Match') {
+        heroMatchBadge.classList.add('badge-possible');
+      } else {
+        heroMatchBadge.classList.add('badge-not-match');
+      }
+    }
+
+    // Center Operating Carrier Callout
+    if (heroCenterCarrier) {
+      heroCenterCarrier.textContent = rec.carrier || 'Carrier Network Not Identified';
+    }
+
+    // Right Telemetry Card 1: Line Type & Classification
+    if (heroLineType) heroLineType.textContent = rec.line_type || 'unknown';
+    if (heroLineStatus) {
+      if (rec.line_type === 'fixedVoip') {
+        heroLineStatus.textContent = 'Business PBX / Cloud SIP';
+      } else if (rec.line_type === 'landline') {
+        heroLineStatus.textContent = 'Local PSTN Copper Loop';
+      } else if (rec.line_type === 'mobile') {
+        heroLineStatus.textContent = 'Cellular Mobile Interface';
+      } else if (rec.line_type === 'tollFree') {
+        heroLineStatus.textContent = 'Inbound Toll-Free Routing';
+      } else {
+        heroLineStatus.textContent = 'Enterprise Local Circuit';
+      }
+    }
+
+    // Right Telemetry Card 2: Confidence Arc Gauge (RPM Meter Equivalent)
+    renderConfidenceGauge(rec.match_status);
+
+    // Right Telemetry Card 3: Session Cost
+    if (heroCostVal) {
+      const cost = state.scanProgress ? state.scanProgress.estimated_cost_dollars : 0.025;
+      heroCostVal.textContent = `$${cost.toFixed(3)}`;
+    }
+
+    // Mini Bars Rate
+    renderMiniBars();
+  }
+
+  function renderConfidenceGauge(matchStatus) {
+    if (!gaugeArcPath || !heroConfidencePct || !heroConfidenceTag) return;
+
+    // Total arc perimeter ~ 141.37
+    const arcTotal = 141.37;
+    let pct = 98;
+    let label = 'Direct Alias';
+    let strokeColor = '#236B59';
+
+    if (matchStatus === 'Comcast Match') {
+      pct = 98;
+      label = 'Direct Alias';
+      strokeColor = '#236B59';
+    } else if (matchStatus === 'Possible Match') {
+      pct = 65;
+      label = 'Carrier Affiliate';
+      strokeColor = '#B87A28';
+    } else if (matchStatus === 'Not Match') {
+      pct = 15;
+      label = 'Alternate Network';
+      strokeColor = '#6C7A87';
+    } else {
+      pct = 5;
+      label = 'Unverified Signal';
+      strokeColor = '#8E9BA6';
+    }
+
+    // dashoffset = arcTotal * (1 - pct / 100)
+    const offset = Math.max(4, arcTotal * (1 - pct / 100));
+    gaugeArcPath.setAttribute('stroke', strokeColor);
+    gaugeArcPath.setAttribute('stroke-dashoffset', offset.toFixed(1));
+    heroConfidencePct.textContent = `${pct}%`;
+    heroConfidenceTag.textContent = label;
+  }
+
+  function renderMiniBars() {
+    if (!heroMiniBars || !heroComcastPct) return;
+
+    const total = state.records.length;
+    const comcastCount = state.records.filter((r) => r.match_status === 'Comcast Match').length;
+    const pct = total > 0 ? Math.round((comcastCount / total) * 100) : 0;
+    heroComcastPct.textContent = `${pct}%`;
+
+    const activeBars = Math.round((pct / 100) * 10);
+    let barsHtml = '';
+    for (let i = 0; i < 10; i++) {
+      const h = 8 + (i % 5) * 3;
+      const isActive = i < activeBars;
+      barsHtml += `<div class="gauge-bar-slice ${isActive ? 'active' : ''}" style="height: ${h}px"></div>`;
+    }
+    heroMiniBars.innerHTML = barsHtml;
+  }
+
+  // Copy Phone Number
+  heroBtnCopyPhone?.addEventListener('click', () => {
+    if (!state.selectedRecord) return;
+    const num = state.selectedRecord.formatted_phone || state.selectedRecord.phone;
+    if (!num) return;
+
+    navigator.clipboard.writeText(num).then(() => {
+      const originalSpan = heroBtnCopyPhone.querySelector('span');
+      if (originalSpan) {
+        const orig = originalSpan.textContent;
+        originalSpan.textContent = 'Copied!';
+        setTimeout(() => {
+          originalSpan.textContent = orig;
+        }, 1500);
+      }
+    });
+  });
+
+  // ==========================================================================
+  // Horizontal Company Selection Rail
+  // ==========================================================================
+  function renderCompanyRail() {
+    if (!companyRailTrack) return;
+
+    if (state.records.length === 0) {
+      companyRailTrack.innerHTML = `
+        <div style="padding: 12px 16px; font-size: 12px; color: var(--text-muted);">
+          No businesses loaded yet. Click "Run Demo Scan" above to discover Fresno businesses.
+        </div>
+      `;
+      return;
+    }
+
+    let html = '';
+    state.records.forEach((rec, idx) => {
+      const isActive = state.selectedRecord && state.selectedRecord.id === rec.id;
+      const codeId = `#FRES-${idx + 1}`;
+      let dotClass = 'dot-other';
+      if (rec.match_status === 'Comcast Match') dotClass = 'dot-match';
+      if (rec.match_status === 'Possible Match') dotClass = 'dot-possible';
+
+      html += `
+        <div class="rail-card ${isActive ? 'active' : ''}" data-id="${rec.id}">
+          <div class="rail-card-head">
+            <span class="rail-card-id mono">${codeId}</span>
+            <span class="rail-status-dot ${dotClass}" title="${escapeHtml(rec.match_status)}"></span>
+          </div>
+          <div class="rail-card-name" title="${escapeHtml(rec.name)}">${escapeHtml(rec.name)}</div>
+          <div class="rail-card-meta">
+            <span>${escapeHtml(rec.category || 'Business')}</span>
+            <span class="rail-card-phone mono">${escapeHtml(rec.formatted_phone || rec.phone || '—')}</span>
+          </div>
+        </div>
+      `;
+    });
+
+    companyRailTrack.innerHTML = html;
+
+    // Attach click listeners to rail cards
+    companyRailTrack.querySelectorAll('.rail-card').forEach((card) => {
+      card.addEventListener('click', () => {
+        const id = card.getAttribute('data-id');
+        const found = state.records.find((r) => r.id === id);
+        if (found) selectCompany(found);
+      });
+    });
+  }
+
+  function highlightActiveElements(activeId) {
+    // Highlight in rail
+    if (companyRailTrack) {
+      companyRailTrack.querySelectorAll('.rail-card').forEach((c) => {
+        if (c.getAttribute('data-id') === activeId) {
+          c.classList.add('active');
+        } else {
+          c.classList.remove('active');
+        }
+      });
+    }
+
+    // Highlight in table
+    if (dashRecordsTbody) {
+      dashRecordsTbody.querySelectorAll('tr').forEach((tr) => {
+        if (tr.getAttribute('data-id') === activeId) {
+          tr.classList.add('tr-selected');
+        } else {
+          tr.classList.remove('tr-selected');
+        }
+      });
+    }
+  }
+
+  // ==========================================================================
+  // Distribution Overview (Fresno Carrier Share Breakdown)
+  // ==========================================================================
+  function renderDistribution() {
+    const total = state.records.length;
+    if (total === 0) {
+      if (shareComcastCount) shareComcastCount.textContent = '0 (0%)';
+      if (shareAttCount) shareAttCount.textContent = '0 (0%)';
+      if (shareSpectrumCount) shareSpectrumCount.textContent = '0 (0%)';
+      if (shareOtherCount) shareOtherCount.textContent = '0 (0%)';
+      return;
+    }
+
+    let comcast = 0;
+    let att = 0;
+    let spectrum = 0;
+    let other = 0;
+
+    state.records.forEach((r) => {
+      const c = (r.carrier || '').toLowerCase();
+      if (r.match_status === 'Comcast Match' || c.includes('comcast') || c.includes('xfinity')) {
+        comcast++;
+      } else if (c.includes('at&t') || c.includes('pacific bell') || c.includes('sbc')) {
+        att++;
+      } else if (c.includes('charter') || c.includes('spectrum') || c.includes('time warner')) {
+        spectrum++;
+      } else {
+        other++;
+      }
+    });
+
+    const pctComcast = Math.round((comcast / total) * 100);
+    const pctAtt = Math.round((att / total) * 100);
+    const pctSpectrum = Math.round((spectrum / total) * 100);
+    const pctOther = Math.max(0, 100 - pctComcast - pctAtt - pctSpectrum);
+
+    if (meterBarComcast) meterBarComcast.style.width = `${pctComcast}%`;
+    if (meterBarAtt) meterBarAtt.style.width = `${pctAtt}%`;
+    if (meterBarSpectrum) meterBarSpectrum.style.width = `${pctSpectrum}%`;
+    if (meterBarOther) meterBarOther.style.width = `${pctOther}%`;
+
+    if (shareComcastCount) shareComcastCount.textContent = `${comcast} (${pctComcast}%)`;
+    if (shareAttCount) shareAttCount.textContent = `${att} (${pctAtt}%)`;
+    if (shareSpectrumCount) shareSpectrumCount.textContent = `${spectrum} (${pctSpectrum}% )`;
+    if (shareOtherCount) shareOtherCount.textContent = `${other} (${pctOther}%)`;
+  }
+
+  // ==========================================================================
+  // Results Table, Search, Status Tabs & Sorting
+  // ==========================================================================
+  async function fetchResults() {
     try {
-      const res = await fetch('/api/settings');
+      const res = await fetch('/api/scan/results');
       if (!res.ok) return;
       const data = await res.json();
-      state.settings = data;
-      renderSettingsStatus(data);
+      state.records = data.records || [];
+      if (navResultsCount) navResultsCount.textContent = state.records.length;
+
+      // Update Tab Counter Numbers
+      updateTabCounts();
+
+      // Default select first Comcast Match or first record
+      if (!state.selectedRecord && state.records.length > 0) {
+        const firstMatch = state.records.find((r) => r.match_status === 'Comcast Match') || state.records[0];
+        selectCompany(firstMatch);
+      }
+
+      applyFiltersAndSort();
+      renderCompanyRail();
+      renderDistribution();
     } catch (e) {
-      console.error('Error loading settings:', e);
+      console.error('Error fetching results:', e);
     }
   }
 
-  function renderSettingsStatus(data) {
-    if (!sidebarApiStatus) return;
+  function updateTabCounts() {
+    const comcastCount = state.records.filter((r) => r.match_status === 'Comcast Match').length;
+    const possibleCount = state.records.filter((r) => r.match_status === 'Possible Match').length;
+    const otherCount = state.records.filter((r) => r.match_status === 'Not Match' || r.match_status === 'Unknown').length;
 
-    if (data.is_configured) {
-      sidebarApiStatus.innerHTML = `
-        <span class="status-dot status-configured"></span>
-        <span class="status-text">APIs Connected</span>
-      `;
-    } else {
-      sidebarApiStatus.innerHTML = `
-        <span class="status-dot status-unconfigured"></span>
-        <span class="status-text">Setup Required / Demo</span>
-      `;
-    }
-
-    if (data.google && data.google.has_key && settingGoogleKey) {
-      settingGoogleKey.placeholder = `Configured (${data.google.masked_key})`;
-    }
-    if (data.twilio && settingTwilioKeySid) {
-      if (data.twilio.api_key_sid_masked) {
-        settingTwilioKeySid.placeholder = `Configured (${data.twilio.api_key_sid_masked})`;
-      }
-      if (data.twilio.account_sid_masked && settingTwilioAccountSid) {
-        settingTwilioAccountSid.placeholder = `Configured (${data.twilio.account_sid_masked})`;
-      }
-      if (data.twilio.has_secret && settingTwilioSecret) {
-        settingTwilioSecret.placeholder = 'Configured (••••••••)';
-      }
-    }
+    if (tabCntComcast) tabCntComcast.textContent = comcastCount;
+    if (tabCntPossible) tabCntPossible.textContent = possibleCount;
+    if (tabCntAll) tabCntAll.textContent = state.records.length;
+    if (tabCntOther) tabCntOther.textContent = otherCount;
+    if (recordsTotalTag) recordsTotalTag.textContent = `${state.records.length} businesses`;
   }
 
-  btnSaveSettings?.addEventListener('click', async () => {
-    const payload = {};
-    if (settingGoogleKey.value.trim()) payload.google_places_api_key = settingGoogleKey.value.trim();
-    if (settingTwilioAccountSid.value.trim()) payload.twilio_account_sid = settingTwilioAccountSid.value.trim();
-    if (settingTwilioKeySid.value.trim()) payload.twilio_api_key_sid = settingTwilioKeySid.value.trim();
-    if (settingTwilioSecret.value.trim()) payload.twilio_api_secret = settingTwilioSecret.value.trim();
+  function applyFiltersAndSort() {
+    let filtered = [...state.records];
 
-    try {
-      btnSaveSettings.disabled = true;
-      btnSaveSettings.textContent = 'Saving...';
-      const res = await fetch('/api/settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+    // Filter by Status Tab
+    if (state.activeFilterStatus && state.activeFilterStatus !== 'all') {
+      if (state.activeFilterStatus === 'Not Match') {
+        filtered = filtered.filter((r) => r.match_status === 'Not Match' || r.match_status === 'Unknown');
+      } else {
+        filtered = filtered.filter((r) => r.match_status === state.activeFilterStatus);
+      }
+    }
+
+    // Filter by Category Dropdown
+    if (state.activeFilterCategory && state.activeFilterCategory !== 'all') {
+      filtered = filtered.filter(
+        (r) => r.category === state.activeFilterCategory || r.category_id === state.activeFilterCategory
+      );
+    }
+
+    // Text Search
+    if (state.searchQuery) {
+      const q = state.searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (r) =>
+          (r.name && r.name.toLowerCase().includes(q)) ||
+          (r.address && r.address.toLowerCase().includes(q)) ||
+          (r.carrier && r.carrier.toLowerCase().includes(q)) ||
+          (r.phone && r.phone.toLowerCase().includes(q)) ||
+          (r.formatted_phone && r.formatted_phone.toLowerCase().includes(q))
+      );
+    }
+
+    // Sorting
+    filtered.sort((a, b) => {
+      let valA = a[state.sortCol] || '';
+      let valB = b[state.sortCol] || '';
+      if (typeof valA === 'string') valA = valA.toLowerCase();
+      if (typeof valB === 'string') valB = valB.toLowerCase();
+
+      if (valA < valB) return state.sortAsc ? -1 : 1;
+      if (valA > valB) return state.sortAsc ? 1 : -1;
+      return 0;
+    });
+
+    state.filteredRecords = filtered;
+    renderDashboardTable();
+  }
+
+  function renderDashboardTable() {
+    if (!dashRecordsTbody) return;
+
+    if (state.filteredRecords.length === 0) {
+      dashRecordsTbody.innerHTML = '';
+      if (dashEmptyNotice) dashEmptyNotice.style.display = 'flex';
+      return;
+    }
+
+    if (dashEmptyNotice) dashEmptyNotice.style.display = 'none';
+
+    let html = '';
+    state.filteredRecords.forEach((r) => {
+      const isSelected = state.selectedRecord && state.selectedRecord.id === r.id;
+      const badgeClass = getBadgeClass(r.match_status);
+      const websiteLink = r.website
+        ? `<a href="${escapeHtml(r.website)}" target="_blank" rel="noopener noreferrer" class="tbl-link-web" onclick="event.stopPropagation()">Website ↗</a>`
+        : `<span style="color: var(--text-muted)">—</span>`;
+
+      html += `
+        <tr data-id="${r.id}" class="${isSelected ? 'tr-selected' : ''}">
+          <td><strong class="tbl-biz-name">${escapeHtml(r.name)}</strong></td>
+          <td><span style="color: var(--text-secondary); font-size: 12px;">${escapeHtml(r.address || '—')}</span></td>
+          <td><span class="mono" style="font-size: 12px;">${escapeHtml(r.formatted_phone || r.phone || '—')}</span></td>
+          <td><strong>${escapeHtml(r.carrier || 'Unknown')}</strong></td>
+          <td><span class="mono" style="font-size: 12px;">${escapeHtml(r.line_type || 'unknown')}</span></td>
+          <td>${websiteLink}</td>
+          <td><span class="badge ${badgeClass}">${escapeHtml(r.match_status || 'Unknown')}</span></td>
+        </tr>
+      `;
+    });
+
+    dashRecordsTbody.innerHTML = html;
+
+    // Attach click handler to table rows for selecting into Hero Showcase
+    dashRecordsTbody.querySelectorAll('tr').forEach((tr) => {
+      tr.addEventListener('click', () => {
+        const id = tr.getAttribute('data-id');
+        const found = state.records.find((r) => r.id === id);
+        if (found) {
+          selectCompany(found);
+          // Smooth scroll to top of dashboard if scrolled down
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       });
-      const data = await res.json();
-      btnSaveSettings.disabled = false;
-      btnSaveSettings.textContent = 'Save Credentials';
-
-      if (res.ok) {
-        showStatusBanner('success', data.message || 'Credentials saved securely.');
-        // Clear plaintext inputs
-        settingGoogleKey.value = '';
-        settingTwilioAccountSid.value = '';
-        settingTwilioKeySid.value = '';
-        settingTwilioSecret.value = '';
-        loadSettings();
-      } else {
-        showStatusBanner('error', data.detail || 'Failed to save settings.');
-      }
-    } catch (e) {
-      btnSaveSettings.disabled = false;
-      btnSaveSettings.textContent = 'Save Credentials';
-      showStatusBanner('error', 'Network error saving settings.');
-    }
-  });
-
-  btnTestGoogle?.addEventListener('click', async () => {
-    try {
-      btnTestGoogle.disabled = true;
-      btnTestGoogle.textContent = 'Testing Google...';
-      const res = await fetch('/api/settings/test-google', { method: 'POST' });
-      const data = await res.json();
-      btnTestGoogle.disabled = false;
-      btnTestGoogle.textContent = 'Test Google Places';
-
-      if (data.success) {
-        showStatusBanner('success', data.message);
-      } else {
-        showStatusBanner('error', data.message);
-      }
-    } catch (e) {
-      btnTestGoogle.disabled = false;
-      btnTestGoogle.textContent = 'Test Google Places';
-      showStatusBanner('error', 'Failed to connect to test endpoint.');
-    }
-  });
-
-  btnTestTwilio?.addEventListener('click', async () => {
-    try {
-      btnTestTwilio.disabled = true;
-      btnTestTwilio.textContent = 'Testing Twilio...';
-      const res = await fetch('/api/settings/test-twilio', { method: 'POST' });
-      const data = await res.json();
-      btnTestTwilio.disabled = false;
-      btnTestTwilio.textContent = 'Test Twilio';
-
-      if (data.success) {
-        showStatusBanner('success', data.message);
-      } else {
-        showStatusBanner('error', data.message);
-      }
-    } catch (e) {
-      btnTestTwilio.disabled = false;
-      btnTestTwilio.textContent = 'Test Twilio';
-      showStatusBanner('error', 'Failed to connect to test endpoint.');
-    }
-  });
-
-  function showStatusBanner(type, message) {
-    if (!settingsStatusBanner) return;
-    settingsStatusBanner.className = `status-banner ${type}`;
-    settingsStatusBanner.textContent = message;
-    settingsStatusBanner.style.display = 'block';
+    });
   }
+
+  function renderFullResultsTable() {
+    if (!fullResultsTbody) return;
+
+    let html = '';
+    state.records.forEach((r) => {
+      const badgeClass = getBadgeClass(r.match_status);
+      const websiteLink = r.website
+        ? `<a href="${escapeHtml(r.website)}" target="_blank" rel="noopener noreferrer" class="tbl-link-web">Website ↗</a>`
+        : `<span style="color: var(--text-muted)">—</span>`;
+
+      html += `
+        <tr>
+          <td><strong>${escapeHtml(r.name)}</strong></td>
+          <td><span style="font-size: 12px; color: var(--text-secondary);">${escapeHtml(r.address || '—')}</span></td>
+          <td><span class="mono">${escapeHtml(r.formatted_phone || r.phone || '—')}</span></td>
+          <td>${escapeHtml(r.carrier || 'Unknown')}</td>
+          <td><span class="mono">${escapeHtml(r.line_type || 'unknown')}</span></td>
+          <td>${websiteLink}</td>
+          <td>${escapeHtml(r.category || 'General')}</td>
+          <td><span class="badge ${badgeClass}">${escapeHtml(r.match_status || 'Unknown')}</span></td>
+        </tr>
+      `;
+    });
+
+    fullResultsTbody.innerHTML = html;
+  }
+
+  function getBadgeClass(status) {
+    if (status === 'Comcast Match') return 'badge-comcast';
+    if (status === 'Possible Match') return 'badge-possible';
+    if (status === 'Not Match') return 'badge-not-match';
+    return 'badge-not-match';
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  // Status Tab Clicks
+  statusFilterTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      statusFilterTabs.forEach((t) => t.classList.remove('active'));
+      tab.classList.add('active');
+      state.activeFilterStatus = tab.getAttribute('data-status');
+      applyFiltersAndSort();
+    });
+  });
+
+  // Search & Category Dropdown
+  dashSearchInput?.addEventListener('input', (e) => {
+    state.searchQuery = e.target.value.trim();
+    applyFiltersAndSort();
+  });
+
+  dashCategorySelect?.addEventListener('change', (e) => {
+    state.activeFilterCategory = e.target.value;
+    applyFiltersAndSort();
+  });
+
+  // Table Column Sort
+  document.querySelectorAll('.th-sortable').forEach((th) => {
+    th.addEventListener('click', () => {
+      const col = th.getAttribute('data-col');
+      if (state.sortCol === col) {
+        state.sortAsc = !state.sortAsc;
+      } else {
+        state.sortCol = col;
+        state.sortAsc = true;
+      }
+      applyFiltersAndSort();
+    });
+  });
 
   // ==========================================================================
   // Cost Calculator
@@ -321,65 +676,24 @@ document.addEventListener('DOMContentLoaded', () => {
   inputMaxBiz?.addEventListener('input', updateCostEstimate);
   inputMaxLookups?.addEventListener('input', updateCostEstimate);
   document.querySelectorAll('input[name="provider_mode"]').forEach((radio) => {
-    radio.addEventListener('change', (e) => {
-      const mode = e.target.value;
-      if (customCsvContainer) {
-        customCsvContainer.style.display = mode === 'licensed_dataset' ? 'block' : 'none';
-      }
-      updateCostEstimate();
-    });
-  });
-
-  // Custom CSV Upload Handler
-  customCsvFileInput?.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      customCsvStatus.textContent = 'Reading CSV...';
-      const res = await fetch('/api/import/csv', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
-      if (res.ok) {
-        // Read file content locally as text for the scan request
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          state.customCsvContent = evt.target.result;
-          customCsvStatus.textContent = `✓ Loaded ${data.row_count} businesses from ${file.name}`;
-        };
-        reader.readAsText(file);
-      } else {
-        customCsvStatus.textContent = `Error: ${data.detail || 'Upload failed'}`;
-      }
-    } catch (err) {
-      customCsvStatus.textContent = 'Upload error.';
-    }
+    radio.addEventListener('change', updateCostEstimate);
   });
 
   // ==========================================================================
   // Scan Execution & SSE Streaming
   // ==========================================================================
-  async function startScan() {
+  async function startScan(forcedProvider) {
     const selectedCats = Array.from(
       document.querySelectorAll('input[name="scan_category"]:checked')
     ).map((cb) => cb.value);
 
-    if (selectedCats.length === 0) {
-      alert('Please select at least one business category.');
-      return;
-    }
-
-    const providerMode = document.querySelector('input[name="provider_mode"]:checked')?.value || 'demo';
-    const maxBiz = parseInt(inputMaxBiz.value, 10) || 50;
-    const maxLookups = parseInt(inputMaxLookups.value, 10) || 25;
+    const categories = selectedCats.length > 0 ? selectedCats : ['restaurant', 'dentist', 'auto_repair', 'plumber', 'law_firm'];
+    const providerMode = forcedProvider || document.querySelector('input[name="provider_mode"]:checked')?.value || 'demo';
+    const maxBiz = parseInt(inputMaxBiz?.value || 50, 10);
+    const maxLookups = parseInt(inputMaxLookups?.value || 25, 10);
 
     const payload = {
-      categories: selectedCats,
+      categories: categories,
       max_businesses: maxBiz,
       max_lookups: maxLookups,
       provider_mode: providerMode,
@@ -387,9 +701,11 @@ document.addEventListener('DOMContentLoaded', () => {
       custom_csv_content: providerMode === 'licensed_dataset' ? state.customCsvContent : null,
     };
 
+    if (topStatusText) topStatusText.textContent = 'Running Scan...';
+
     try {
-      btnStartScan.style.display = 'none';
-      btnStopScan.style.display = 'inline-flex';
+      if (btnStartScan) btnStartScan.style.display = 'none';
+      if (btnStopScan) btnStopScan.style.display = 'inline-flex';
 
       const res = await fetch('/api/scan/start', {
         method: 'POST',
@@ -400,26 +716,23 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!res.ok) {
         const err = await res.json();
         alert(err.detail || 'Failed to start scan.');
-        btnStartScan.style.display = 'inline-flex';
-        btnStopScan.style.display = 'none';
+        resetScanButtons();
         return;
       }
 
       const startData = await res.json();
       if (startData.status && startData.status.stage === 'Completed') {
-        updateScanUI(startData.status);
         finishScan(startData.status);
       } else {
         setupSSE();
       }
     } catch (e) {
-      console.error('Error starting scan:', e);
-      btnStartScan.style.display = 'inline-flex';
-      btnStopScan.style.display = 'none';
+      console.error('Scan start error:', e);
+      resetScanButtons();
     }
   }
 
-  btnStartScan?.addEventListener('click', startScan);
+  btnStartScan?.addEventListener('click', () => startScan());
 
   btnStopScan?.addEventListener('click', async () => {
     try {
@@ -427,43 +740,36 @@ document.addEventListener('DOMContentLoaded', () => {
       btnStopScan.textContent = 'Stopping...';
       await fetch('/api/scan/stop', { method: 'POST' });
     } catch (e) {
-      console.error('Error stopping scan:', e);
+      console.error('Scan stop error:', e);
     }
   });
 
   function setupSSE() {
-    if (state.eventSource) {
-      state.eventSource.close();
-    }
-
+    if (state.eventSource) state.eventSource.close();
     state.eventSource = new EventSource('/api/scan/stream');
 
     state.eventSource.addEventListener('progress', (e) => {
       const data = JSON.parse(e.data);
-      updateScanUI(data);
+      updateProgressState(data);
     });
 
     state.eventSource.addEventListener('scan_completed', (e) => {
       const data = JSON.parse(e.data);
-      updateScanUI(data);
       finishScan(data);
     });
 
     state.eventSource.addEventListener('scan_stopped', (e) => {
       const data = JSON.parse(e.data);
-      updateScanUI(data);
       finishScan(data);
     });
 
     state.eventSource.addEventListener('scan_failed', (e) => {
       const data = JSON.parse(e.data);
-      updateScanUI(data);
       finishScan(data);
-      alert(`Scan stopped due to an error: ${data.error_message || 'Unknown error'}`);
+      alert(`Scan encountered an issue: ${data.error_message || 'Unknown error'}`);
     });
 
     state.eventSource.onerror = () => {
-      // Fallback: poll progress once if SSE drops
       checkProgressPolling();
     };
   }
@@ -473,53 +779,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('/api/scan/progress');
       if (res.ok) {
         const data = await res.json();
-        updateScanUI(data);
-        if (!data.is_running) {
-          finishScan(data);
-        }
+        updateProgressState(data);
+        if (!data.is_running) finishScan(data);
       }
     } catch (e) {}
   }
 
-  function updateScanUI(progress) {
+  function updateProgressState(progress) {
     state.scanProgress = progress;
-
-    // Update Dashboard Metrics
-    if (dashKpiBusinesses) dashKpiBusinesses.textContent = progress.businesses_discovered;
-    if (dashKpiChecked) dashKpiChecked.textContent = progress.numbers_checked;
-    if (dashKpiComcast) dashKpiComcast.textContent = progress.comcast_matches;
-    if (dashKpiPossible) dashKpiPossible.textContent = progress.possible_matches;
-
-    if (dashEngineState) {
-      dashEngineState.textContent = progress.is_running ? 'Running' : progress.stage;
-      dashEngineState.className = `badge ${progress.is_running ? 'badge-comcast' : 'badge-neutral'}`;
-    }
-    if (dashStageText) dashStageText.textContent = progress.stage;
-
-    // Calculate percentage
-    const maxLookups = parseInt(inputMaxLookups.value, 10) || 25;
-    const pct = maxLookups > 0 ? Math.min(100, Math.round((progress.numbers_checked / maxLookups) * 100)) : 0;
-    if (dashProgressFill) dashProgressFill.style.width = `${pct}%`;
-    if (dashProgressCounts) dashProgressCounts.textContent = `${progress.numbers_checked} / ${maxLookups} numbers checked`;
-    if (dashCostTag) dashCostTag.textContent = `Est. Cost: $${progress.estimated_cost_dollars.toFixed(3)}`;
-
-    // Update New Scan Live Activity Cards
-    if (liveStageBadge) liveStageBadge.textContent = progress.stage;
-    if (liveMetricFound) liveMetricFound.textContent = progress.businesses_discovered;
-    if (liveMetricChecked) liveMetricChecked.textContent = progress.numbers_checked;
-    if (liveMetricComcast) liveMetricComcast.textContent = progress.comcast_matches;
-    if (liveMetricPossible) liveMetricPossible.textContent = progress.possible_matches;
-
-    if (liveProgressFill) liveProgressFill.style.width = `${pct}%`;
-    if (liveStageDesc) liveStageDesc.textContent = `${progress.stage} (${progress.numbers_checked} checked)`;
-    if (liveEstCostReadout) liveEstCostReadout.textContent = `Est. Cost: $${progress.estimated_cost_dollars.toFixed(3)}`;
-
-    if (liveSourceAttribution && progress.attribution_text) {
-      liveSourceAttribution.textContent = `Source: ${progress.attribution_text}`;
-    }
-
-    if (btnDashViewResults) {
-      btnDashViewResults.style.display = progress.businesses_discovered > 0 ? 'inline-flex' : 'none';
+    if (topStatusText) {
+      topStatusText.textContent = progress.is_running
+        ? `${progress.stage} (${progress.numbers_checked} checked)`
+        : `Ready · ${progress.provider_mode || 'Demo Mode'}`;
     }
   }
 
@@ -528,340 +799,37 @@ document.addEventListener('DOMContentLoaded', () => {
       state.eventSource.close();
       state.eventSource = null;
     }
-
-    btnStartScan.style.display = 'inline-flex';
-    btnStopScan.style.display = 'none';
-    btnStopScan.disabled = false;
-    btnStopScan.textContent = 'Stop Scan';
-
-    // Fetch and load results table
+    resetScanButtons();
+    if (topStatusText) topStatusText.textContent = 'Ready · Scan Complete';
     await fetchResults();
   }
 
-  // ==========================================================================
-  // Results Table, Search, Filtering, Sorting, Pagination
-  // ==========================================================================
-  async function fetchResults() {
-    try {
-      const res = await fetch('/api/scan/results');
-      if (!res.ok) return;
-      const data = await res.json();
-      state.records = data.records || [];
-      if (navResultsCount) navResultsCount.textContent = state.records.length;
-
-      if (resultsAttributionText && data.progress && data.progress.attribution_text) {
-        resultsAttributionText.textContent = data.progress.attribution_text;
-      }
-
-      applyFiltersAndSort();
-    } catch (e) {
-      console.error('Error fetching results:', e);
+  function resetScanButtons() {
+    if (btnStartScan) btnStartScan.style.display = 'inline-flex';
+    if (btnStopScan) {
+      btnStopScan.style.display = 'none';
+      btnStopScan.disabled = false;
+      btnStopScan.textContent = 'Stop Scan';
     }
   }
 
-  function applyFiltersAndSort() {
-    let filtered = [...state.records];
-
-    // Filter by match status
-    if (state.activeFilterStatus && state.activeFilterStatus !== 'all') {
-      filtered = filtered.filter((r) => r.match_status === state.activeFilterStatus);
-    }
-
-    // Filter by category
-    if (state.activeFilterCategory && state.activeFilterCategory !== 'all') {
-      filtered = filtered.filter(
-        (r) => r.category === state.activeFilterCategory || r.category_id === state.activeFilterCategory
-      );
-    }
-
-    // Search query
-    if (state.searchQuery) {
-      const q = state.searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (r) =>
-          (r.name && r.name.toLowerCase().includes(q)) ||
-          (r.address && r.address.toLowerCase().includes(q)) ||
-          (r.carrier && r.carrier.toLowerCase().includes(q)) ||
-          (r.phone && r.phone.toLowerCase().includes(q)) ||
-          (r.formatted_phone && r.formatted_phone.toLowerCase().includes(q))
-      );
-    }
-
-    // Sorting
-    filtered.sort((a, b) => {
-      let valA = a[state.sortCol] || '';
-      let valB = b[state.sortCol] || '';
-      if (typeof valA === 'string') valA = valA.toLowerCase();
-      if (typeof valB === 'string') valB = valB.toLowerCase();
-
-      if (valA < valB) return state.sortAsc ? -1 : 1;
-      if (valA > valB) return state.sortAsc ? 1 : -1;
-      return 0;
-    });
-
-    state.filteredRecords = filtered;
-    state.currentPage = 1;
-    renderTable();
-  }
-
-  function renderTable() {
-    if (!resultsTbody) return;
-
-    const total = state.filteredRecords.length;
-    if (resultsCountText) {
-      resultsCountText.textContent = `Showing ${total} of ${state.records.length} records`;
-    }
-
-    if (total === 0) {
-      resultsTbody.innerHTML = '';
-      if (resultsEmptyState) resultsEmptyState.style.display = 'flex';
-      if (paginationInfo) paginationInfo.textContent = 'Page 0 of 0';
-      if (btnPrevPage) btnPrevPage.disabled = true;
-      if (btnNextPage) btnNextPage.disabled = true;
+  // ==========================================================================
+  // CSV Export Modal & Compliance
+  // ==========================================================================
+  function openExportModal() {
+    if (state.records.length === 0) {
+      alert('Please run a scan first to obtain records.');
       return;
     }
-
-    if (resultsEmptyState) resultsEmptyState.style.display = 'none';
-
-    // Pagination slice
-    const totalPages = Math.ceil(total / state.pageSize);
-    if (state.currentPage > totalPages) state.currentPage = totalPages;
-    const startIdx = (state.currentPage - 1) * state.pageSize;
-    const pageRecords = state.filteredRecords.slice(startIdx, startIdx + state.pageSize);
-
-    if (paginationInfo) {
-      paginationInfo.textContent = `Page ${state.currentPage} of ${totalPages} (${total} items)`;
-    }
-    if (btnPrevPage) btnPrevPage.disabled = state.currentPage <= 1;
-    if (btnNextPage) btnNextPage.disabled = state.currentPage >= totalPages;
-
-    let html = '';
-    pageRecords.forEach((r, idx) => {
-      const badgeClass = getBadgeClass(r.match_status);
-      const websiteLink = r.website
-        ? `<a href="${escapeHtml(r.website)}" target="_blank" rel="noopener noreferrer" class="table-link">Visit ↗</a>`
-        : `<span class="text-muted">—</span>`;
-
-      html += `
-        <tr>
-          <td>
-            <span class="table-biz-name" data-id="${r.id}">${escapeHtml(r.name)}</span>
-          </td>
-          <td><span class="table-address">${escapeHtml(r.address || '—')}</span></td>
-          <td><span class="table-phone">${escapeHtml(r.formatted_phone || r.phone || '—')}</span></td>
-          <td><span class="table-carrier">${escapeHtml(r.carrier || 'Unknown')}</span></td>
-          <td><span class="table-line-type">${escapeHtml(r.line_type || 'unknown')}</span></td>
-          <td>${websiteLink}</td>
-          <td>${escapeHtml(r.category || 'General')}</td>
-          <td><span class="badge ${badgeClass}">${escapeHtml(r.match_status || 'Unknown')}</span></td>
-          <td>
-            <button class="btn btn-secondary btn-sm btn-inspect-row" data-id="${r.id}" title="Inspect Details">
-              Details
-            </button>
-          </td>
-        </tr>
-      `;
-    });
-
-    resultsTbody.innerHTML = html;
-
-    // Attach row inspection handlers
-    document.querySelectorAll('.table-biz-name, .btn-inspect-row').forEach((el) => {
-      el.addEventListener('click', () => {
-        const recordId = el.getAttribute('data-id');
-        const found = state.records.find((item) => item.id === recordId);
-        if (found) openRecordDrawer(found);
-      });
-    });
-  }
-
-  function getBadgeClass(status) {
-    if (status === 'Comcast Match') return 'badge-comcast';
-    if (status === 'Possible Match') return 'badge-possible';
-    if (status === 'Not Match') return 'badge-not-match';
-    return 'badge-unknown';
-  }
-
-  function escapeHtml(str) {
-    if (!str) return '';
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
-  // Filter Listeners
-  filterMatchStatus?.addEventListener('change', (e) => {
-    state.activeFilterStatus = e.target.value;
-    applyFiltersAndSort();
-  });
-
-  filterCategory?.addEventListener('change', (e) => {
-    state.activeFilterCategory = e.target.value;
-    applyFiltersAndSort();
-  });
-
-  resultsSearchInput?.addEventListener('input', (e) => {
-    state.searchQuery = e.target.value.trim();
-    applyFiltersAndSort();
-  });
-
-  // Table Sorting
-  document.querySelectorAll('.th-sortable').forEach((th) => {
-    th.addEventListener('click', () => {
-      const col = th.getAttribute('data-col');
-      if (state.sortCol === col) {
-        state.sortAsc = !state.sortAsc;
-      } else {
-        state.sortCol = col;
-        state.sortAsc = true;
-      }
-
-      document.querySelectorAll('.sort-icon').forEach((si) => (si.textContent = '↕'));
-      const activeIcon = th.querySelector('.sort-icon');
-      if (activeIcon) activeIcon.textContent = state.sortAsc ? '↑' : '↓';
-
-      applyFiltersAndSort();
-    });
-  });
-
-  // Pagination Listeners
-  btnPrevPage?.addEventListener('click', () => {
-    if (state.currentPage > 1) {
-      state.currentPage--;
-      renderTable();
-    }
-  });
-
-  btnNextPage?.addEventListener('click', () => {
-    const totalPages = Math.ceil(state.filteredRecords.length / state.pageSize);
-    if (state.currentPage < totalPages) {
-      state.currentPage++;
-      renderTable();
-    }
-  });
-
-  function refreshResultsTable() {
-    if (state.records.length === 0) {
-      fetchResults();
-    } else {
-      applyFiltersAndSort();
-    }
-  }
-
-  // ==========================================================================
-  // Business Detail Inspection Drawer
-  // ==========================================================================
-  function openRecordDrawer(record) {
-    state.selectedRecord = record;
-    if (drawerBizName) drawerBizName.textContent = record.name;
-
-    const badgeClass = getBadgeClass(record.match_status);
-
-    let html = `
-      <div class="detail-row">
-        <div class="detail-label">Match Status</div>
-        <div class="detail-value">
-          <span class="badge ${badgeClass}">${escapeHtml(record.match_status)}</span>
-        </div>
-      </div>
-
-      <div class="detail-row">
-        <div class="detail-label">Identified Carrier (Twilio Lookup v2)</div>
-        <div class="detail-value"><strong>${escapeHtml(record.carrier || 'Unknown')}</strong></div>
-      </div>
-
-      <div class="detail-row">
-        <div class="detail-label">Line Type</div>
-        <div class="detail-value mono">${escapeHtml(record.line_type || 'unknown')}</div>
-      </div>
-
-      <div class="detail-row">
-        <div class="detail-label">Match Classification Notes</div>
-        <div class="detail-value">${escapeHtml(record.match_notes || 'Standard evaluation')}</div>
-      </div>
-
-      <div class="detail-row">
-        <div class="detail-label">Phone Number</div>
-        <div class="detail-value mono">
-          ${escapeHtml(record.formatted_phone || record.phone || '—')}
-          ${record.e164 ? ` <span class="text-muted">(${escapeHtml(record.e164)})</span>` : ''}
-        </div>
-      </div>
-
-      <div class="detail-row">
-        <div class="detail-label">Physical Street Address</div>
-        <div class="detail-value">${escapeHtml(record.address || '—')}</div>
-      </div>
-
-      <div class="detail-row">
-        <div class="detail-label">Business Category</div>
-        <div class="detail-value">${escapeHtml(record.category || 'General')}</div>
-      </div>
-
-      <div class="detail-row">
-        <div class="detail-label">Official Website</div>
-        <div class="detail-value">
-          ${
-            record.website
-              ? `<a href="${escapeHtml(record.website)}" target="_blank" rel="noopener noreferrer" class="link-subtle">${escapeHtml(record.website)} ↗</a>`
-              : '—'
-          }
-        </div>
-      </div>
-
-      <div class="detail-row">
-        <div class="detail-label">Internal Place / Record Identifier</div>
-        <div class="detail-value mono">${escapeHtml(record.place_id || record.id)}</div>
-      </div>
-
-      <div class="detail-row">
-        <div class="detail-label">Data Source & Export Licensing Rights</div>
-        <div class="detail-value">
-          ${escapeHtml(record.provider_source || 'default')}
-          (${record.allows_export ? 'Export Allowed' : 'Export Restricted by ToS'})
-        </div>
-      </div>
-    `;
-
-    if (drawerBizContent) drawerBizContent.innerHTML = html;
-    if (drawerOverlay) drawerOverlay.classList.add('active');
-  }
-
-  function closeRecordDrawer() {
-    if (drawerOverlay) drawerOverlay.classList.remove('active');
-    state.selectedRecord = null;
-  }
-
-  drawerCloseBtn?.addEventListener('click', closeRecordDrawer);
-  drawerOverlay?.addEventListener('click', (e) => {
-    if (e.target === drawerOverlay) closeRecordDrawer();
-  });
-
-  // ==========================================================================
-  // CSV Export Modal & Compliance Guard (PRD Section 11 & AC-21)
-  // ==========================================================================
-  btnOpenExportModal?.addEventListener('click', () => {
-    if (state.records.length === 0) {
-      alert('No business records to export. Please run a scan first.');
-      return;
-    }
-
-    // Check if the current records contain restricted Google Places items
     const hasRestricted = state.records.some((r) => !r.allows_export);
-
     if (exportComplianceWarning) {
-      if (hasRestricted) {
-        exportComplianceWarning.style.display = 'block';
-      } else {
-        exportComplianceWarning.style.display = 'none';
-      }
+      exportComplianceWarning.style.display = hasRestricted ? 'block' : 'none';
     }
-
     if (exportModalBackdrop) exportModalBackdrop.classList.add('active');
-  });
+  }
+
+  btnExportCsvAction?.addEventListener('click', openExportModal);
+  btnOpenExportModalFull?.addEventListener('click', openExportModal);
 
   function closeExportModal() {
     if (exportModalBackdrop) exportModalBackdrop.classList.remove('active');
@@ -891,19 +859,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (res.status === 403) {
         const errorData = await res.json();
-        alert(
-          `${errorData.title || 'Export Blocked'}\n\n${errorData.detail}\n\nRecommendation: ${errorData.recommendation}`
-        );
+        alert(`${errorData.title || 'Export Restricted'}\n\n${errorData.detail}\n\n${errorData.recommendation}`);
         return;
       }
 
       if (!res.ok) {
         const errorData = await res.json();
-        alert(errorData.detail || 'Failed to export CSV.');
+        alert(errorData.detail || 'CSV export failed.');
         return;
       }
 
-      // Download file blob
       const blob = await res.blob();
       const disposition = res.headers.get('Content-Disposition') || '';
       let filename = 'fresno_comcast_businesses.csv';
@@ -923,13 +888,112 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {
       btnConfirmExport.disabled = false;
       btnConfirmExport.textContent = 'Download CSV';
-      alert('Network error during CSV export.');
+      alert('Network error during CSV download.');
     }
   });
 
   // ==========================================================================
-  // Initialization
+  // Settings API
   // ==========================================================================
+  async function loadSettings() {
+    try {
+      const res = await fetch('/api/settings');
+      if (!res.ok) return;
+      const data = await res.json();
+      state.settings = data;
+      if (data.google && data.google.has_key && settingGoogleKey) {
+        settingGoogleKey.placeholder = `Configured (${data.google.masked_key})`;
+      }
+      if (data.twilio && settingTwilioKeySid) {
+        if (data.twilio.api_key_sid_masked) {
+          settingTwilioKeySid.placeholder = `Configured (${data.twilio.api_key_sid_masked})`;
+        }
+        if (data.twilio.account_sid_masked && settingTwilioAccountSid) {
+          settingTwilioAccountSid.placeholder = `Configured (${data.twilio.account_sid_masked})`;
+        }
+        if (data.twilio.has_secret && settingTwilioSecret) {
+          settingTwilioSecret.placeholder = 'Configured (Secret stored)';
+        }
+      }
+    } catch (e) {}
+  }
+
+  btnSaveSettings?.addEventListener('click', async () => {
+    const payload = {};
+    if (settingGoogleKey.value.trim()) payload.google_places_api_key = settingGoogleKey.value.trim();
+    if (settingTwilioAccountSid.value.trim()) payload.twilio_account_sid = settingTwilioAccountSid.value.trim();
+    if (settingTwilioKeySid.value.trim()) payload.twilio_api_key_sid = settingTwilioKeySid.value.trim();
+    if (settingTwilioSecret.value.trim()) payload.twilio_api_secret = settingTwilioSecret.value.trim();
+
+    try {
+      btnSaveSettings.disabled = true;
+      btnSaveSettings.textContent = 'Saving...';
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      btnSaveSettings.disabled = false;
+      btnSaveSettings.textContent = 'Save Credentials';
+
+      if (res.ok) {
+        showStatusBanner('success', data.message || 'Credentials stored securely.');
+        settingGoogleKey.value = '';
+        settingTwilioAccountSid.value = '';
+        settingTwilioKeySid.value = '';
+        settingTwilioSecret.value = '';
+        loadSettings();
+      } else {
+        showStatusBanner('error', data.detail || 'Failed to save settings.');
+      }
+    } catch (e) {
+      btnSaveSettings.disabled = false;
+      btnSaveSettings.textContent = 'Save Credentials';
+      showStatusBanner('error', 'Network error.');
+    }
+  });
+
+  btnTestGoogle?.addEventListener('click', async () => {
+    try {
+      btnTestGoogle.disabled = true;
+      btnTestGoogle.textContent = 'Testing...';
+      const res = await fetch('/api/settings/test-google', { method: 'POST' });
+      const data = await res.json();
+      btnTestGoogle.disabled = false;
+      btnTestGoogle.textContent = 'Test Google';
+      showStatusBanner(data.success ? 'success' : 'error', data.message);
+    } catch (e) {
+      btnTestGoogle.disabled = false;
+      btnTestGoogle.textContent = 'Test Google';
+      showStatusBanner('error', 'Test connection failed.');
+    }
+  });
+
+  btnTestTwilio?.addEventListener('click', async () => {
+    try {
+      btnTestTwilio.disabled = true;
+      btnTestTwilio.textContent = 'Testing...';
+      const res = await fetch('/api/settings/test-twilio', { method: 'POST' });
+      const data = await res.json();
+      btnTestTwilio.disabled = false;
+      btnTestTwilio.textContent = 'Test Twilio';
+      showStatusBanner(data.success ? 'success' : 'error', data.message);
+    } catch (e) {
+      btnTestTwilio.disabled = false;
+      btnTestTwilio.textContent = 'Test Twilio';
+      showStatusBanner('error', 'Test connection failed.');
+    }
+  });
+
+  function showStatusBanner(type, message) {
+    if (!settingsStatusBanner) return;
+    settingsStatusBanner.className = `status-banner ${type}`;
+    settingsStatusBanner.textContent = message;
+    settingsStatusBanner.style.display = 'block';
+  }
+
+  // Initial Load
   loadSettings();
   updateCostEstimate();
   fetchResults();
