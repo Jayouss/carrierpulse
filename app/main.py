@@ -91,6 +91,7 @@ async def index(request: Request):
         request,
         "index.html",
         {
+            "request": request,
             "settings": settings_data,
             "version": AppSettings.VERSION,
         },
