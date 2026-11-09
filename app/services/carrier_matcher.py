@@ -73,7 +73,7 @@ def normalize_carrier_string(raw: Optional[str]) -> str:
 
 
 def classify_carrier(raw_carrier: Optional[str]) -> CarrierClassification:
-    """Classify carrier name according to PRD FR-04 rules."""
+    """Classify carrier name according to multi-tier enterprise telecom matching rules."""
     raw = raw_carrier.strip() if raw_carrier else ""
 
     if not raw or raw.lower() in {"unknown", "n/a", "none", "null", "undefined"}:

@@ -1,4 +1,4 @@
-"""Tests for Carrier Matching and Comcast Classification (FR-04)."""
+"""Tests for Carrier Matching and Comcast Classification."""
 
 import pytest
 from app.services.carrier_matcher import (

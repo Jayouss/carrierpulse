@@ -224,7 +224,7 @@ Fresno Carrier Finder implements separate provider pipelines to respect source l
 ├── sample_data/
 │   ├── demo_records.json           # Synthetic Fresno business records
 │   ├── fresno_businesses_licensed.csv # Export-eligible Fresno business dataset
-│   └── example_export_fresno_comcast.csv # Sample CSV export matching PRD
+│   └── example_export_fresno_comcast.csv # Sample production CSV export
 ├── tests/
 │   ├── test_phone_utils.py         # Phone parsing & extension tests
 │   ├── test_carrier_matcher.py     # Comcast classification tests
@@ -235,7 +235,7 @@ Fresno Carrier Finder implements separate provider pipelines to respect source l
 ├── Start App.bat                   # 1-click Windows launcher & browser opener
 ├── requirements.txt                # Python package dependencies
 ├── .env.example                    # Sample environment variables
-└── README.md                       # Beginner-friendly documentation
+└── README.md                       # Complete platform documentation
 ```
 
 ---

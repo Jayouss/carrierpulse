@@ -1,4 +1,4 @@
-"""Tests for Scan Orchestration and Manager Pipeline (FR-09 & FR-10)."""
+"""Tests for Scan Orchestration and Manager Pipeline."""
 
 import asyncio
 from app.services.scan_manager import ScanManager

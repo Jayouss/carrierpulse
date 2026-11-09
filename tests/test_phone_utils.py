@@ -1,4 +1,4 @@
-"""Tests for Phone Number Normalization and Validation (FR-02)."""
+"""Tests for Phone Number Normalization and Validation."""
 
 import pytest
 from app.services.phone_utils import normalize_phone_number

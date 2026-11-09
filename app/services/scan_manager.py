@@ -1,4 +1,4 @@
-"""Scan Orchestrator Service (FR-09 & FR-10).
+"""Commercial Scan Orchestrator and Telecommunications Pipeline Service.
 
 Manages background scans, enforces concurrency and spend limits,
 updates real-time metrics, coordinates phone normalization & carrier matching,
