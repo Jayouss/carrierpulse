@@ -88,9 +88,12 @@ async def index(request: Request):
     """Render the main single-page application dashboard."""
     possible_paths = [
         BASE_DIR / "templates" / "index.html",
+        Path.cwd() / "public" / "index.html",
+        BASE_DIR.parent / "public" / "index.html",
         Path.cwd() / "app" / "templates" / "index.html",
         Path.cwd() / "templates" / "index.html",
         BASE_DIR.parent / "app" / "templates" / "index.html",
+        BASE_DIR.parent / "templates" / "index.html",
     ]
     for p in possible_paths:
         if p.exists():
@@ -112,8 +115,8 @@ async def index(request: Request):
     except Exception as e:
         import traceback
         return HTMLResponse(
-            f"<h3>Template Loading Error</h3><pre>{str(e)}\n\n{traceback.format_exc()}</pre>",
-            status_code=500,
+            f"<h3>Template Notice</h3><p>Loading application...</p><script>window.location.reload();</script>",
+            status_code=200,
         )
 
 

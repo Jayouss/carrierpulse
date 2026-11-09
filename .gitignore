@@ -45,7 +45,11 @@ scratch/
 scripts/
 *.html
 !templates/**/*.html
+!templates/*.html
 !app/templates/**/*.html
+!app/templates/*.html
+!public/**/*.html
+!public/*.html
 *.svg
 *.png
 *.txt

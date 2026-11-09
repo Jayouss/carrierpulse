@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fresno Carrier Finder — Intelligence Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="app-body">
+
+  <div class="dashboard-shell">
+    <!-- Top Navigation Bar -->
+    <header class="top-navbar">
+      <div class="navbar-left">
+        <div class="brand-badge">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">Fresno Carrier Finder</span>
+          <span class="brand-tag">Comcast &amp; Xfinity Telecom Intelligence</span>
+        </div>
+      </div>
+
+      <!-- Segmented Navigation Pills -->
+      <nav class="nav-segmented-track" aria-label="Main Navigation">
+        <button class="nav-pill active" data-screen="dashboard">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-pill" data-screen="new-scan">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span>New Scan</span>
+        </button>
+        <button class="nav-pill" data-screen="results">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <span>Results Table</span>
+          <span class="pill-count" id="nav-results-count">0</span>
+        </button>
+        <button class="nav-pill" data-screen="settings">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Settings</span>
+        </button>
+      </nav>
+
+      <!-- Right Cluster -->
+      <div class="navbar-right">
+        <div class="live-status-pill" id="top-status-indicator">
+          <span class="pulse-dot"></span>
+          <span class="status-label" id="top-status-text">Ready · Demo Mode</span>
+        </div>
+        <button class="btn btn-emerald btn-sm" id="btn-top-quick-scan">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>Run Demo Scan</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Viewport Container -->
+    <main class="dashboard-viewport">
+
+      <!-- =============================================================== -->
+      <!-- VIEW 1: DASHBOARD WITH COMPANY HERO INSPECTION & DATA TABLE     -->
+      <!-- =============================================================== -->
+      <div class="view-panel active" id="view-dashboard">
+
+        <!-- 1. HERO COMPANY SHOWCASE (Ronas IT Truck Equivalent) -->
+        <section class="hero-showcase-card" id="company-hero-card">
+          <!-- Left Telemetry Column -->
+          <div class="hero-col hero-col-left">
+            <div class="hero-header-line">
+              <span class="hero-code mono" id="hero-company-id">#FRESNO-01</span>
+              <span class="badge badge-hero-match" id="hero-match-badge">Comcast Match</span>
+            </div>
+
+            <h2 class="hero-biz-name" id="hero-company-name">Central Valley Grill &amp; Smokehouse</h2>
+            <div class="hero-meta-row">
+              <span class="hero-category-chip" id="hero-company-category">Restaurants</span>
+              <span class="hero-address-text" id="hero-company-address">1240 Fulton St, Fresno, CA 93721</span>
+            </div>
+
+            <!-- Route / Progress Metaphor: Phone Verification Pipeline -->
+            <div class="pipeline-track-card">
+              <div class="pipeline-endpoints">
+                <span class="endpoint-marker mono" id="hero-phone-national">(559) 441-8890</span>
+                <span class="pipeline-tag mono" id="hero-phone-e164">+15594418890</span>
+              </div>
+              <div class="pipeline-bar-wrapper">
+                <div class="pipeline-bar-fill" style="width: 100%"></div>
+              </div>
+              <div class="pipeline-subline">
+                <span class="pipeline-status">E.164 Normalized &middot; Verified Active</span>
+                <span class="pipeline-latency mono">Twilio v2 OK</span>
+              </div>
+            </div>
+
+            <!-- Total Scanned Performance Bar -->
+            <div class="hero-stat-block">
+              <div class="stat-block-header">
+                <span class="stat-label">Comcast Detection Rate</span>
+                <span class="stat-period">Fresno Batch</span>
+              </div>
+              <div class="stat-bar-gauge">
+                <div class="gauge-bars-group" id="hero-mini-bars">
+                  <!-- Injected via JS -->
+                </div>
+                <span class="stat-pct mono" id="hero-comcast-pct">75%</span>
+              </div>
+            </div>
+
+            <!-- Quick Action Links -->
+            <div class="hero-actions-row">
+              <a href="#" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" id="hero-link-website">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                <span>Visit Website</span>
+              </a>
+              <button class="btn btn-outline btn-sm" id="hero-btn-copy-phone" title="Copy Phone">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <span>Copy Number</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Center Visual Showcase (Telecommunication Node / Office Architecture) -->
+          <div class="hero-col hero-col-center">
+            <div class="company-visual-stage">
+              <div class="visual-backplate">
+                <div class="radial-ambient-light"></div>
+                <!-- Interactive Central Telecom Graphic -->
+                <div class="telecom-node-graphic">
+                  <div class="signal-orbit orbit-1"></div>
+                  <div class="signal-orbit orbit-2"></div>
+                  <div class="core-hub-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+                      <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+                      <line x1="6" y1="6" x2="6.01" y2="6"/>
+                      <line x1="6" y1="18" x2="6.01" y2="18"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div class="carrier-brand-callout">
+                <span class="callout-sub">Verified Operating Network</span>
+                <strong class="callout-name" id="hero-center-carrier">Comcast Business Communications</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Telemetry Gauges Column -->
+          <div class="hero-col hero-col-right">
+            <!-- Card 1: Carrier & Line Type -->
+            <div class="telemetry-card card-signal">
+              <div class="telemetry-icon-badge">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+              </div>
+              <div class="telemetry-content">
+                <span class="telemetry-label">Line Type</span>
+                <div class="telemetry-value-lg mono" id="hero-line-type">fixedVoip</div>
+                <span class="telemetry-sub" id="hero-line-status">Business PBX / Cloud SIP</span>
+              </div>
+            </div>
+
+            <!-- Card 2: Confidence & Signal Arc Gauge (RPM Meter Equivalent) -->
+            <div class="telemetry-card card-gauge">
+              <div class="gauge-top-row">
+                <span class="gauge-title">Signal Confidence</span>
+                <span class="gauge-caption">Algorithmic Match Strength</span>
+              </div>
+              <div class="semicircle-gauge-wrapper">
+                <svg viewBox="0 0 120 70" class="semicircle-svg">
+                  <!-- Track -->
+                  <path d="M 15 65 A 45 45 0 0 1 105 65" fill="none" stroke="#E2E7E3" stroke-width="10" stroke-linecap="round"/>
+                  <!-- Progress Path -->
+                  <path id="gauge-arc-path" d="M 15 65 A 45 45 0 0 1 105 65" fill="none" stroke="#236B59" stroke-width="10" stroke-linecap="round" stroke-dasharray="141.37" stroke-dashoffset="14"/>
+                </svg>
+                <div class="gauge-readout-center">
+                  <span class="gauge-readout-number mono" id="hero-confidence-pct">98%</span>
+                  <span class="gauge-readout-label" id="hero-confidence-tag">Direct Alias</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3: Batch Cost & Volume -->
+            <div class="telemetry-card card-stat-mini">
+              <div class="telemetry-content">
+                <span class="telemetry-label">Session Lookup Cost</span>
+                <div class="telemetry-value-lg mono" id="hero-cost-val">$0.025</div>
+                <div class="telemetry-sparkline" id="hero-sparkline">
+                  <!-- SVG Trendline -->
+                  <svg width="100%" height="24" viewBox="0 0 100 24" preserveAspectRatio="none">
+                    <path d="M0,20 Q20,16 40,18 T70,8 T100,5" fill="none" stroke="#236B59" stroke-width="2"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. HORIZONTAL COMPANY SELECTION RAIL (Ronas IT Vehicle Carousel) -->
+        <section class="company-rail-wrapper">
+          <div class="rail-header">
+            <span class="rail-title">Scanned Companies in Fresno</span>
+            <span class="rail-hint">Click any business card below to inspect details in the hero terminal</span>
+          </div>
+          <div class="company-rail-track" id="company-rail-track">
+            <!-- Injected dynamically via JS: company thumb cards -->
+          </div>
+        </section>
+
+        <!-- 3. BOTTOM SECTION: DISTRIBUTION OVERVIEW + DATA TABLE -->
+        <section class="bottom-split-section">
+          <!-- Left: Fresno Distribution Overview (Map & Share Breakdown) -->
+          <div class="side-panel-card">
+            <div class="panel-head-line">
+              <h3 class="panel-heading">Fresno Carrier Share</h3>
+              <span class="panel-pill mono">Metro CA</span>
+            </div>
+
+            <div class="carrier-share-breakdown">
+              <!-- Visual Meter Bar -->
+              <div class="segmented-meter-bar" id="distribution-meter-bar">
+                <div class="meter-segment seg-comcast" style="width: 55%" title="Comcast"></div>
+                <div class="meter-segment seg-att" style="width: 25%" title="AT&T"></div>
+                <div class="meter-segment seg-spectrum" style="width: 12%" title="Spectrum"></div>
+                <div class="meter-segment seg-other" style="width: 8%" title="Other"></div>
+              </div>
+
+              <!-- Share Legend List -->
+              <div class="share-legend-list">
+                <div class="legend-row">
+                  <div class="legend-title-group">
+                    <span class="legend-dot dot-comcast"></span>
+                    <span class="legend-name">Comcast &amp; Xfinity</span>
+                  </div>
+                  <span class="legend-count mono" id="share-comcast-count">0 (0%)</span>
+                </div>
+                <div class="legend-row">
+                  <div class="legend-title-group">
+                    <span class="legend-dot dot-att"></span>
+                    <span class="legend-name">AT&amp;T California</span>
+                  </div>
+                  <span class="legend-count mono" id="share-att-count">0 (0%)</span>
+                </div>
+                <div class="legend-row">
+                  <div class="legend-title-group">
+                    <span class="legend-dot dot-spectrum"></span>
+                    <span class="legend-name">Spectrum / Charter</span>
+                  </div>
+                  <span class="legend-count mono" id="share-spectrum-count">0 (0%)</span>
+                </div>
+                <div class="legend-row">
+                  <div class="legend-title-group">
+                    <span class="legend-dot dot-other"></span>
+                    <span class="legend-name">Other / Unverified</span>
+                  </div>
+                  <span class="legend-count mono" id="share-other-count">0 (0%)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fresno Geographic Scope Highlights -->
+            <div class="fresno-geo-highlights">
+              <div class="geo-stat-item">
+                <span class="geo-stat-label">Coverage Radius</span>
+                <strong class="geo-stat-val mono">25 km Metro</strong>
+              </div>
+              <div class="geo-stat-item">
+                <span class="geo-stat-label">Primary Prefix</span>
+                <strong class="geo-stat-val mono">Area 559</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Main Business Results Table Card -->
+          <div class="main-table-card">
+            <!-- Table Header Toolbar -->
+            <div class="table-card-topbar">
+              <div class="table-title-cluster">
+                <h3 class="panel-heading">Identified Records</h3>
+                <span class="record-counter-tag mono" id="records-total-tag">0</span>
+              </div>
+
+              <!-- Status Filter Tabs (Ronas IT Orders Header Tabs) -->
+              <div class="table-status-tabs" id="status-filter-tabs">
+                <button class="status-tab active" data-status="Comcast Match">Comcast Matches (<span id="tab-cnt-comcast">0</span>)</button>
+                <button class="status-tab" data-status="Possible Match">Possible (<span id="tab-cnt-possible">0</span>)</button>
+                <button class="status-tab" data-status="all">All (<span id="tab-cnt-all">0</span>)</button>
+                <button class="status-tab" data-status="Not Match">Other (<span id="tab-cnt-other">0</span>)</button>
+              </div>
+
+              <!-- Action Controls -->
+              <div class="table-actions-cluster">
+                <button class="btn btn-emerald btn-sm" id="btn-export-csv-action">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <span>Export CSV</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Search & Secondary Filter Row -->
+            <div class="table-search-row">
+              <div class="search-input-wrap">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="dash-search-input" placeholder="Search business, address, or carrier name...">
+              </div>
+              <div class="select-category-wrap">
+                <select id="dash-category-select" class="clean-select">
+                  <option value="all">All Categories</option>
+                  <option value="Restaurants">Restaurants</option>
+                  <option value="Dentists">Dentists</option>
+                  <option value="Auto Repair Shops">Auto Repair</option>
+                  <option value="Plumbers">Plumbers</option>
+                  <option value="Law Firms / Professional Offices">Law Firms</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Data Table Body -->
+            <div class="table-viewport-box">
+              <table class="ronas-table" id="main-records-table">
+                <thead>
+                  <tr>
+                    <th class="th-sortable" data-col="name">Company Name</th>
+                    <th class="th-sortable" data-col="address">Address</th>
+                    <th class="th-sortable" data-col="phone">Phone Number</th>
+                    <th class="th-sortable" data-col="carrier">Carrier Network</th>
+                    <th class="th-sortable" data-col="line_type">Line Type</th>
+                    <th>Website</th>
+                    <th class="th-sortable" data-col="match_status">Match Status</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-records-tbody">
+                  <!-- Injected via JavaScript -->
+                </tbody>
+              </table>
+
+              <!-- Empty State -->
+              <div class="table-empty-notice" id="dash-empty-notice" style="display: none;">
+                <div class="empty-icon-circle">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </div>
+                <h4>No matching businesses found</h4>
+                <p>Try switching to "All" or run a new scan across additional Fresno categories.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- =============================================================== -->
+      <!-- VIEW 2: NEW SCAN CONFIGURATION & EXECUTION                       -->
+      <!-- =============================================================== -->
+      <div class="view-panel" id="view-new-scan">
+        <div class="subpage-card">
+          <div class="subpage-header">
+            <h2 class="subpage-title">Configure Business Discovery Scan</h2>
+            <p class="subpage-desc">Scan Fresno businesses and detect Comcast/Xfinity carrier assignments via Twilio Lookup v2.</p>
+          </div>
+
+          <form id="scan-config-form" class="scan-form-grid">
+            <div class="form-column-main">
+              <!-- Provider Selection -->
+              <div class="form-card-block">
+                <label class="block-label">1. Select Data Provider</label>
+                <div class="provider-cards-rack">
+                  <label class="provider-radio-card">
+                    <input type="radio" name="provider_mode" value="demo" checked>
+                    <div class="radio-card-body">
+                      <strong>Demo Mode (Fresno Synthetic Dataset)</strong>
+                      <span>Zero API keys required. Test real-time scan, UI, classification, and CSV export.</span>
+                    </div>
+                  </label>
+                  <label class="provider-radio-card">
+                    <input type="radio" name="provider_mode" value="google_places">
+                    <div class="radio-card-body">
+                      <strong>Google Places API (New)</strong>
+                      <span>Live discovery in Fresno. Display only (Google Terms prohibit bulk CSV downloads).</span>
+                    </div>
+                  </label>
+                  <label class="provider-radio-card">
+                    <input type="radio" name="provider_mode" value="licensed_dataset">
+                    <div class="radio-card-body">
+                      <strong>Licensed Dataset / CSV Upload</strong>
+                      <span>Export-licensed Fresno records or your own business CSV. Fully exportable.</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Categories -->
+              <div class="form-card-block">
+                <label class="block-label">2. Target Business Categories</label>
+                <div class="category-pills-wrap">
+                  <label class="cat-pill-checkbox">
+                    <input type="checkbox" name="scan_category" value="restaurant" checked>
+                    <span>Restaurants</span>
+                  </label>
+                  <label class="cat-pill-checkbox">
+                    <input type="checkbox" name="scan_category" value="dentist" checked>
+                    <span>Dentists</span>
+                  </label>
+                  <label class="cat-pill-checkbox">
+                    <input type="checkbox" name="scan_category" value="auto_repair" checked>
+                    <span>Auto Repair</span>
+                  </label>
+                  <label class="cat-pill-checkbox">
+                    <input type="checkbox" name="scan_category" value="plumber" checked>
+                    <span>Plumbers</span>
+                  </label>
+                  <label class="cat-pill-checkbox">
+                    <input type="checkbox" name="scan_category" value="law_firm" checked>
+                    <span>Law Firms</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Limits -->
+              <div class="form-card-block form-card-split">
+                <div class="input-field-group">
+                  <label class="field-label" for="input-max-biz">Max Businesses to Discover</label>
+                  <input type="number" id="input-max-biz" class="clean-input" value="50" min="5" max="500" step="5">
+                  <span class="field-help">Cap on listings fetched (max: 500)</span>
+                </div>
+                <div class="input-field-group">
+                  <label class="field-label" for="input-max-lookups">Max Carrier Lookups</label>
+                  <input type="number" id="input-max-lookups" class="clean-input" value="25" min="1" max="250" step="5">
+                  <span class="field-help">Paid Twilio Lookup inquiries cap (max: 250)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Side Cost Summary Card -->
+            <div class="form-column-side">
+              <div class="cost-summary-box">
+                <h4 class="cost-box-title">Estimated Cost Calculation</h4>
+                <div class="cost-total-amount mono" id="scan-est-cost-display">$0.125</div>
+                <div class="cost-lines">
+                  <div class="cost-line">
+                    <span>Twilio Lookup v2 (~$0.005/num):</span>
+                    <strong class="mono" id="cost-twilio-part">$0.125</strong>
+                  </div>
+                  <div class="cost-line">
+                    <span>Google Places Searches (~$0.032/page):</span>
+                    <strong class="mono" id="cost-google-part">$0.000</strong>
+                  </div>
+                </div>
+                <p class="cost-note">Estimates for guidance only. Bounded by your spend limit.</p>
+                <button type="button" class="btn btn-emerald btn-lg btn-block" id="btn-start-scan">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  <span>Start Scan</span>
+                </button>
+                <button type="button" class="btn btn-danger btn-lg btn-block" id="btn-stop-scan" style="display: none;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="6" y="6" width="12" height="12"/></svg>
+                  <span>Stop Scan</span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- =============================================================== -->
+      <!-- VIEW 3: FULL RESULTS TABLE VIEW                                 -->
+      <!-- =============================================================== -->
+      <div class="view-panel" id="view-results">
+        <div class="subpage-card">
+          <div class="subpage-header-row">
+            <div>
+              <h2 class="subpage-title">All Scan Results</h2>
+              <p class="subpage-desc">Complete inspection table for all discovered businesses and verified phone carriers.</p>
+            </div>
+            <button class="btn btn-emerald" id="btn-open-export-modal-full">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Export CSV</span>
+            </button>
+          </div>
+
+          <div class="full-table-viewport">
+            <table class="ronas-table" id="full-results-table">
+              <thead>
+                <tr>
+                  <th class="th-sortable" data-col="name">Business Name</th>
+                  <th class="th-sortable" data-col="address">Address</th>
+                  <th class="th-sortable" data-col="phone">Phone Number</th>
+                  <th class="th-sortable" data-col="carrier">Carrier Network</th>
+                  <th class="th-sortable" data-col="line_type">Line Type</th>
+                  <th>Website</th>
+                  <th class="th-sortable" data-col="category">Category</th>
+                  <th class="th-sortable" data-col="match_status">Match Status</th>
+                </tr>
+              </thead>
+              <tbody id="full-results-tbody">
+                <!-- Injected via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- =============================================================== -->
+      <!-- VIEW 4: SETTINGS & API CREDENTIALS                              -->
+      <!-- =============================================================== -->
+      <div class="view-panel" id="view-settings">
+        <div class="subpage-card">
+          <div class="subpage-header">
+            <h2 class="subpage-title">API Credentials &amp; Connectivity</h2>
+            <p class="subpage-desc">Enter your Google Places and Twilio API keys to enable live discoveries.</p>
+          </div>
+
+          <div class="settings-form-container">
+            <div class="settings-inputs-block">
+              <!-- Google Key -->
+              <div class="form-row-group">
+                <label class="field-label" for="setting-google-key">Google Places API Key</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="setting-google-key" class="clean-input mono" placeholder="AIzaSy...">
+                  <button type="button" class="btn-toggle-eye" data-target="setting-google-key" aria-label="Toggle password view">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Twilio Credentials -->
+              <div class="form-row-group">
+                <label class="field-label" for="setting-twilio-account-sid">Twilio Account SID</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="setting-twilio-account-sid" class="clean-input mono" placeholder="AC...">
+                  <button type="button" class="btn-toggle-eye" data-target="setting-twilio-account-sid" aria-label="Toggle password view">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-row-group">
+                <label class="field-label" for="setting-twilio-key-sid">Twilio API Key SID</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="setting-twilio-key-sid" class="clean-input mono" placeholder="SK... or AC...">
+                  <button type="button" class="btn-toggle-eye" data-target="setting-twilio-key-sid" aria-label="Toggle password view">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-row-group">
+                <label class="field-label" for="setting-twilio-secret">Twilio API Secret</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="setting-twilio-secret" class="clean-input mono" placeholder="••••••••••••••••">
+                  <button type="button" class="btn-toggle-eye" data-target="setting-twilio-secret" aria-label="Toggle password view">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Action buttons -->
+              <div class="settings-btn-row">
+                <div class="test-btn-pair">
+                  <button type="button" class="btn btn-outline" id="btn-test-google">Test Google</button>
+                  <button type="button" class="btn btn-outline" id="btn-test-twilio">Test Twilio</button>
+                </div>
+                <button type="button" class="btn btn-emerald" id="btn-save-settings">Save Credentials</button>
+              </div>
+
+              <div id="settings-status-banner" class="status-banner" style="display: none;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- CSV Export Modal with Compliance Guard -->
+  <div class="modal-backdrop" id="export-modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Export CSV Records</h3>
+        <button class="modal-close-btn" id="modal-close-btn" aria-label="Close dialog">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="export-compliance-warning" class="compliance-warning-box" style="display: none;">
+          <div class="warning-title">Google Places Licensing Notice</div>
+          <div class="warning-text" id="export-compliance-message">
+            Google Places Terms of Service restrict bulk export of business listings to CSV. To export CSV business leads, please use an Export-Licensed dataset (CSV Import) or switch to Demo Mode.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Export Record Scope:</label>
+          <div class="radio-vertical-group">
+            <label class="radio-option">
+              <input type="radio" name="export_filter" value="confirmed_only" checked>
+              <div>
+                <strong>Confirmed Comcast matches only</strong>
+                <span class="sub-text">Recommended. Only businesses where Comcast or Xfinity is verified.</span>
+              </div>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="export_filter" value="include_possible">
+              <div>
+                <strong>Include possible matches</strong>
+                <span class="sub-text">Includes both verified Comcast and unverified carrier affiliates.</span>
+              </div>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="export_filter" value="all">
+              <div>
+                <strong>All results</strong>
+                <span class="sub-text">Exports every discovered listing with its identified carrier status.</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="export-file-specs">
+          <div><strong>Format:</strong> UTF-8 with BOM (optimized for Microsoft Excel on Windows)</div>
+          <div><strong>Filename:</strong> <code id="export-filename-preview">fresno_comcast_businesses_YYYY-MM-DD.csv</code></div>
+          <div><strong>Formula Injection Guard:</strong> Active (leading single quote escape)</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btn-cancel-export">Cancel</button>
+        <button class="btn btn-emerald" id="btn-confirm-export">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Download CSV</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
