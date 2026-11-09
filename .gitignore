@@ -60,6 +60,7 @@ scripts/
 !sample_data/demo_records.json
 !vercel.json
 *.py
+!main.py
 !app/**/*.py
 !tests/**/*.py
 !api/**/*.py
