@@ -53,9 +53,35 @@ document.addEventListener('DOMContentLoaded', () => {
   const heroConfidencePct = document.getElementById('hero-confidence-pct');
   const heroConfidenceTag = document.getElementById('hero-confidence-tag');
   const heroCostVal = document.getElementById('hero-cost-val');
-  const heroLocationMapFrame = document.getElementById('hero-location-map-frame');
   const heroMapLocationTag = document.getElementById('hero-map-location-tag');
   const heroMapExtLink = document.getElementById('hero-map-ext-link');
+
+  // Leaflet Map & Red Pin Marker Variables
+  let leafletMap = null;
+  let mapRedMarker = null;
+
+  const FRESNO_ADDRESS_COORDS = {
+    "1240 Fulton St": [36.7366, -119.7928],
+    "820 E Olive Ave": [36.7584, -119.7963],
+    "4520 N Blackstone Ave": [36.7972, -119.7909],
+    "7750 N Friant Rd": [36.8488, -119.7788],
+    "1313 E Herndon Ave": [36.8374, -119.7712],
+    "6225 N Fresno St": [36.8276, -119.7801],
+    "2525 W Shaw Ave": [36.8087, -119.8398],
+    "1580 E Herndon Ave": [36.8375, -119.7656],
+    "3845 N Blackstone Ave": [36.7885, -119.7911],
+    "1610 E Belmont Ave": [36.7497, -119.7758],
+    "5120 E Shaw Ave": [36.8091, -119.7042],
+    "3620 E Kings Canyon Rd": [36.7348, -119.7423],
+    "2910 E McKinley Ave": [36.7645, -119.7548],
+    "4210 E Ashlan Ave": [36.7937, -119.7289],
+    "4690 E Gettysburg Ave": [36.8005, -119.7185],
+    "1901 N Gateway Blvd": [36.7667, -119.7102],
+    "2444 Tulare St": [36.7381, -119.7852],
+    "5260 N Palm Ave": [36.8126, -119.8105],
+    "2014 Tulare St": [36.7359, -119.7891],
+    "7108 N Fresno St": [36.8398, -119.7803],
+  };
 
   // Horizontal Company Rail
   const companyRailTrack = document.getElementById('company-rail-track');
@@ -215,19 +241,8 @@ document.addEventListener('DOMContentLoaded', () => {
       heroCenterCarrier.textContent = rec.carrier || 'Carrier Network Not Identified';
     }
 
-    // Center Dynamic Location Map
-    const addressStr = rec.address || 'Fresno, CA';
-    const mapQuery = encodeURIComponent(`${rec.name ? rec.name + ', ' : ''}${addressStr}`);
-    if (heroMapLocationTag) {
-      heroMapLocationTag.textContent = addressStr;
-      heroMapLocationTag.title = addressStr;
-    }
-    if (heroMapExtLink) {
-      heroMapExtLink.href = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
-    }
-    if (heroLocationMapFrame) {
-      heroLocationMapFrame.src = `https://maps.google.com/maps?q=${mapQuery}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
-    }
+    // Center Dynamic Location Map with Red Pin
+    updateMapLocation(rec);
 
     // Right Telemetry Card 1: Line Type & Classification
     if (heroLineType) heroLineType.textContent = rec.line_type || 'unknown';
@@ -291,6 +306,99 @@ document.addEventListener('DOMContentLoaded', () => {
     gaugeArcPath.setAttribute('stroke-dashoffset', offset.toFixed(1));
     heroConfidencePct.textContent = `${pct}%`;
     heroConfidenceTag.textContent = label;
+  }
+
+  // ==========================================================================
+  // Leaflet Dynamic Map with Google-Style Red Pin Marker
+  // ==========================================================================
+  function getCoordsForRecord(rec) {
+    if (!rec) return [36.7366, -119.7928];
+    if (rec.lat && rec.lng) return [parseFloat(rec.lat), parseFloat(rec.lng)];
+    if (rec.address) {
+      for (const [key, coords] of Object.entries(FRESNO_ADDRESS_COORDS)) {
+        if (rec.address.includes(key)) return coords;
+      }
+    }
+    // Deterministic offset based on string hash for other businesses
+    const str = (rec.name || '') + (rec.address || '');
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    const latOffset = ((Math.abs(hash) % 100) / 1000) * 0.06;
+    const lngOffset = (((Math.abs(hash) >> 3) % 100) / 1000) * 0.06;
+    return [36.7468 + latOffset, -119.7726 + lngOffset];
+  }
+
+  function initLeafletMap() {
+    const mapContainer = document.getElementById('company-leaflet-map');
+    if (!mapContainer || typeof L === 'undefined') return;
+
+    try {
+      leafletMap = L.map('company-leaflet-map', {
+        center: [36.7366, -119.7928],
+        zoom: 15,
+        zoomControl: false,
+      });
+
+      L.control.zoom({ position: 'bottomright' }).addTo(leafletMap);
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19,
+        subdomains: 'abcd',
+        attribution: '&copy; OpenStreetMap, &copy; CARTO'
+      }).addTo(leafletMap);
+
+      createRedPinMarker([36.7366, -119.7928], 'Central Valley Grill & Smokehouse');
+    } catch (e) {
+      console.warn('Map initialization notice:', e);
+    }
+  }
+
+  function createRedPinMarker(coords, companyName) {
+    if (!leafletMap || typeof L === 'undefined') return;
+
+    const redPinIcon = L.divIcon({
+      className: 'custom-pin-container',
+      html: `
+        <div class="map-pin-anchor">
+          <svg class="map-pin-svg" viewBox="0 0 34 42" fill="none">
+            <path d="M17 0C7.61 0 0 7.61 0 17C0 29.75 17 42 17 42C17 42 34 29.75 34 17C34 7.61 26.39 0 17 0Z" fill="#EA4335"/>
+            <circle cx="17" cy="15" r="5.5" fill="#7C1910"/>
+          </svg>
+          <div class="map-pin-label-pill" id="pin-company-label">${escapeHtml(companyName)}</div>
+        </div>
+      `,
+      iconSize: [32, 40],
+      iconAnchor: [16, 40],
+    });
+
+    if (mapRedMarker) {
+      mapRedMarker.setLatLng(coords);
+      mapRedMarker.setIcon(redPinIcon);
+    } else {
+      mapRedMarker = L.marker(coords, { icon: redPinIcon }).addTo(leafletMap);
+    }
+  }
+
+  function updateMapLocation(rec) {
+    if (!rec) return;
+    const coords = getCoordsForRecord(rec);
+    const companyName = rec.name || 'Fresno Business';
+
+    if (heroMapLocationTag) {
+      heroMapLocationTag.textContent = rec.address || 'Fresno, CA';
+      heroMapLocationTag.title = rec.address || 'Fresno, CA';
+    }
+
+    if (heroMapExtLink) {
+      const mapQuery = encodeURIComponent(`${companyName}, ${rec.address || 'Fresno, CA'}`);
+      heroMapExtLink.href = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
+    }
+
+    if (leafletMap) {
+      leafletMap.invalidateSize();
+      createRedPinMarker(coords, companyName);
+      leafletMap.flyTo(coords, 16, { animate: true, duration: 0.8 });
+    }
   }
 
   function renderMiniBars() {
@@ -1011,6 +1119,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Initial Load
+  initLeafletMap();
   loadSettings();
   updateCostEstimate();
   fetchResults();

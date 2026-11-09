@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body class="app-body">
@@ -145,15 +146,8 @@
                   </svg>
                 </a>
               </div>
-              <div class="map-frame-wrapper">
-                <iframe
-                  id="hero-location-map-frame"
-                  class="location-map-iframe"
-                  title="Company Location Map"
-                  loading="lazy"
-                  referrerpolicy="no-referrer-when-downgrade"
-                  src="https://maps.google.com/maps?q=1240+Fulton+St,+Fresno,+CA+93721&amp;t=&amp;z=15&amp;ie=UTF8&amp;iwloc=&amp;output=embed">
-                </iframe>
+              <div class="map-frame-wrapper" id="hero-map-wrapper">
+                <div id="company-leaflet-map" class="location-leaflet-map"></div>
               </div>
               <div class="carrier-brand-callout">
                 <span class="callout-sub">Verified Operating Network</span>
@@ -646,6 +640,7 @@
     </div>
   </div>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="/static/js/app.js"></script>
 </body>
 </html>
