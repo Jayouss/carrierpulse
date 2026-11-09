@@ -53,6 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const heroConfidencePct = document.getElementById('hero-confidence-pct');
   const heroConfidenceTag = document.getElementById('hero-confidence-tag');
   const heroCostVal = document.getElementById('hero-cost-val');
+  const heroLocationMapFrame = document.getElementById('hero-location-map-frame');
+  const heroMapLocationTag = document.getElementById('hero-map-location-tag');
+  const heroMapExtLink = document.getElementById('hero-map-ext-link');
 
   // Horizontal Company Rail
   const companyRailTrack = document.getElementById('company-rail-track');
@@ -210,6 +213,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Center Operating Carrier Callout
     if (heroCenterCarrier) {
       heroCenterCarrier.textContent = rec.carrier || 'Carrier Network Not Identified';
+    }
+
+    // Center Dynamic Location Map
+    const addressStr = rec.address || 'Fresno, CA';
+    const mapQuery = encodeURIComponent(`${rec.name ? rec.name + ', ' : ''}${addressStr}`);
+    if (heroMapLocationTag) {
+      heroMapLocationTag.textContent = addressStr;
+      heroMapLocationTag.title = addressStr;
+    }
+    if (heroMapExtLink) {
+      heroMapExtLink.href = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
+    }
+    if (heroLocationMapFrame) {
+      heroLocationMapFrame.src = `https://maps.google.com/maps?q=${mapQuery}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
     }
 
     // Right Telemetry Card 1: Line Type & Classification

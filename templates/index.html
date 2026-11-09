@@ -125,24 +125,35 @@
             </div>
           </div>
 
-          <!-- Center Visual Showcase (Telecommunication Node / Office Architecture) -->
+          <!-- Center Column: Company Location Map & Operating Network -->
           <div class="hero-col hero-col-center">
-            <div class="company-visual-stage">
-              <div class="visual-backplate">
-                <div class="radial-ambient-light"></div>
-                <!-- Interactive Central Telecom Graphic -->
-                <div class="telecom-node-graphic">
-                  <div class="signal-orbit orbit-1"></div>
-                  <div class="signal-orbit orbit-2"></div>
-                  <div class="core-hub-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
-                      <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
-                      <line x1="6" y1="6" x2="6.01" y2="6"/>
-                      <line x1="6" y1="18" x2="6.01" y2="18"/>
-                    </svg>
-                  </div>
+            <div class="company-map-container">
+              <div class="map-header-bar">
+                <div class="map-header-title">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                  </svg>
+                  <span id="hero-map-location-tag">1240 Fulton St, Fresno, CA</span>
                 </div>
+                <a href="https://www.google.com/maps/search/?api=1&query=1240+Fulton+St,+Fresno,+CA+93721" target="_blank" rel="noopener noreferrer" class="map-ext-link" id="hero-map-ext-link" title="Open in Google Maps">
+                  <span>Google Maps</span>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                    <polyline points="15 3 21 3 21 9"/>
+                    <line x1="10" y1="14" x2="21" y2="3"/>
+                  </svg>
+                </a>
+              </div>
+              <div class="map-frame-wrapper">
+                <iframe
+                  id="hero-location-map-frame"
+                  class="location-map-iframe"
+                  title="Company Location Map"
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                  src="https://maps.google.com/maps?q=1240+Fulton+St,+Fresno,+CA+93721&amp;t=&amp;z=15&amp;ie=UTF8&amp;iwloc=&amp;output=embed">
+                </iframe>
               </div>
               <div class="carrier-brand-callout">
                 <span class="callout-sub">Verified Operating Network</span>

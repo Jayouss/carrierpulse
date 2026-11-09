@@ -519,82 +519,82 @@ html, body {
   margin-top: 4px;
 }
 
-/* Center Hero Column: Telecom Station Showcase */
+/* Center Hero Column: Company Location Map & Operating Network */
 .hero-col-center {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   position: relative;
 }
 
-.company-visual-stage {
+.company-map-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
+  gap: 10px;
   width: 100%;
-  padding: 10px 0;
+  justify-content: space-between;
 }
 
-.visual-backplate {
-  position: relative;
-  width: 220px;
-  height: 200px;
+.map-header-bar {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 2px;
 }
 
-.radial-ambient-light {
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  background-color: var(--color-comcast-soft);
-  opacity: 0.6;
-}
-
-.telecom-node-graphic {
-  position: relative;
-  width: 150px;
-  height: 150px;
+.map-header-title {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 220px;
 }
 
-.signal-orbit {
-  position: absolute;
-  border: 1.5px dashed var(--color-comcast);
-  border-radius: 50%;
-  opacity: 0.35;
-}
-
-.signal-orbit.orbit-1 {
-  width: 140px;
-  height: 140px;
-}
-
-.signal-orbit.orbit-2 {
-  width: 100px;
-  height: 100px;
-  border-style: solid;
-  border-color: rgba(35, 107, 89, 0.2);
-}
-
-.core-hub-icon {
-  width: 72px;
-  height: 72px;
-  background-color: #FFFFFF;
-  border-radius: 20px;
-  border: 1px solid var(--border-subtle);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.map-header-title svg {
   color: var(--color-comcast);
-  z-index: 2;
+  flex-shrink: 0;
+}
+
+.map-ext-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-comcast);
+  text-decoration: none;
+  background-color: var(--color-comcast-soft);
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.map-ext-link:hover {
+  background-color: #DCEFE6;
+}
+
+.map-frame-wrapper {
+  width: 100%;
+  height: 195px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  background-color: var(--bg-card-subtle);
+  position: relative;
+}
+
+.location-map-iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
 }
 
 .carrier-brand-callout {
@@ -602,19 +602,20 @@ html, body {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 3px;
+  gap: 2px;
+  padding-top: 4px;
 }
 
 .callout-sub {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .callout-name {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-main);
   letter-spacing: -0.01em;
@@ -1719,10 +1720,7 @@ html, body {
    ========================================================================== */
 @media (max-width: 1200px) {
   .hero-showcase-card {
-    grid-template-columns: 1fr 1fr;
-  }
-  .hero-col-center {
-    display: none;
+    grid-template-columns: 1fr;
   }
   .bottom-split-section {
     grid-template-columns: 1fr;
